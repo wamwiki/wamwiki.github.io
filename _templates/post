@@ -1,0 +1,13 @@
+---
+layout: {{ layout }}
+title: {{ title }}
+modified:
+categories: {{ dir }}
+comments: true
+excerpt:
+tags: []
+image:
+  feature:
+---
+
+
