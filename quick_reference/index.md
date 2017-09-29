@@ -1,8 +1,8 @@
 ---
 layout: page
-title: Research themes
-date: 2017-02-26T00:15:47+01:00
-modified: 2017-09-02T12:30:00+01:00
+title: Quick reference code
+date: 2017-09-29T20:47:00+08:00
+modified: 2017-09-29T20:47:01+08:00
 excerpt: ""
 ---
 <section id="table-of-contents" class="toc">
@@ -14,3 +14,15 @@ excerpt: ""
 {:toc}
 </div>
 </section><!-- /#table-of-contents -->
+
+# The univariate animal model
+
+# Adding fixed effects to a model
+
+# Testing significance of random effects
+
+# Calculating heritability
+
+# Repeated measures
+
+# Bivariate models
