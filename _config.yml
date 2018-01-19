@@ -46,3 +46,33 @@ owner:
   weibo: #username
   flickr: #username
   codepen: #username
+
+# Defaults
+defaults:
+  # _posts
+  - scope:
+      path: ""
+      type: posts
+    values:
+      layout: single
+      author_profile: true
+      read_time: true
+      comments: true
+      share: true
+      related: true
+  # _pages
+  - scope:
+      path: ""
+      type: pages
+    values:
+      comments: true
+      read_time: true
+      share: true
+      author_profile: true
+      related: false
+
+# Comments
+comments:
+  provider: "disqus"
+  disqus:
+    shortname: "wamwiki-github-io"
