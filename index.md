@@ -4,7 +4,7 @@ title: Welcome to Wamwiki Pages
 date: 2017-09-30T17:01:00+08:00
 modified: 2017-09-30T17:01:00+08:00
 excerpt: ""
-tags: [quantitative genetics, home]
+tags: [quantitative genetics, home, animal model, heritability, evolution]
 ---
 
 # WAMWIKI
