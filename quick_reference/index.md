@@ -17,6 +17,16 @@ excerpt: ""
 
 # The univariate animal model
 
+```r
+#set the prior
+p.var<-var(phenotypicdata$SIZE,na.rm=TRUE)
+prior1.1<-list(G=list( G1=list(V=matrix(p.var/2),n=1)), R=list(V=matrix(p.var/2),n=1))
+
+#model specification
+model1.1<-MCMCglmm(SIZE~1,random=~ANIMAL,
+          pedigree=pedigreedata,data=phenotypicdata,prior=prior1.1)
+```
+
 # Adding fixed effects to a model
 
 # Testing significance of random effects
