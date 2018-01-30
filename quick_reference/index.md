@@ -4,7 +4,7 @@ title: Quick reference code
 date: 2017-09-29T20:47:00+08:00
 modified: 2017-09-29T20:47:01+08:00
 excerpt: "Quick start with simple animal models"
-tags: [Animal model, heritability, MCMCglmm, ASReml]
+tags: [Animal model, heritability, MCMCglmm, ASReml, software, additive genetic variance]
 ---
 <section id="table-of-contents" class="toc">
   <header>
