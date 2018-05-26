@@ -7,7 +7,9 @@ excerpt: "Simulating simple data for quantitative genetics"
 tags: [Animal model, heritability, MCMCglmm, ASReml, software, additive genetic variance]
 comments: true
 categories: [code]
+includes:
+      before_body: SimulationsSimpleQG.html
 ---
 
 
-Alors?
+
