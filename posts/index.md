@@ -17,4 +17,4 @@ tags: [Animal model, heritability, MCMCglmm, ASReml, software, additive genetic 
 </section><!-- /#table-of-contents -->
 
 
-* [Simulating simple data for quantitative genetics](https://wamwiki.github.io//posts/SimulationsSimpleGQ)
+* [Simulating simple data for quantitative genetics](https://wamwiki.github.io//posts/SimulationsSimpleGQ.md)
