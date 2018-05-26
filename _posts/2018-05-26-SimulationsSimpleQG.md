@@ -11,5 +11,7 @@ includes:
       before_body: SimulationsSimpleQG.html
 ---
 
+Temporary solution:
+[Link to html page](SimulationsSimpleGQ.html)
 
 
