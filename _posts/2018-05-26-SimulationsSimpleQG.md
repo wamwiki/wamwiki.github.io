@@ -12,6 +12,6 @@ includes:
 ---
 
 Temporary solution:
-[Link to html page](https://wamwiki.github.io//RoutputFiles/SimulationsSimpleGQ.html)
+[Link to html page](https://wamwiki.github.io//RoutputFiles/SimulationsSimpleGQ)
 
 
