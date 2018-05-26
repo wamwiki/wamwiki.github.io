@@ -97,10 +97,62 @@ SIZE ~ mu !r ANIMAL
 
 # Adding fixed effects to a model
 
+## Using MCMCglmm
+
+```r
+model1.2<-MCMCglmm(BWT~SEX,random=~animal,
+                       pedigree=Ped,data=Data,prior=prior1.1,
+                       nitt=65000,thin=50,burnin=15000,verbose=FALSE)
+
+posterior.mode(model1.2$Sol[,"SEX2"])
+
+HPDinterval(model1.2$Sol[,"SEX2"],0.95)
+
+posterior.mode(model1.2$VCV)
+
+posterior.heritability1.2<-model1.2$VCV[,"animal"]/
+                (model1.2$VCV[,"animal"]+model1.2$VCV[,"units"])
+posterior.mode(posterior.heritability1.2)
+
+HPDinterval(posterior.heritability1.2,0.95)
+```
+
+## Using ASReml
+
+```r
+ASReml analysis of size  
+ ANIMAL       !P 
+ SIZE
+ SEX         !A  #denotes a factor
+ AGE          #here treated as a linear effect
+
+pedigreedata.ped      !skip 1   
+phenotypicdata.dat    !skip 1    !DDF 1 !FCON #specifies method of sig testing
+ 
+SIZE ~ mu  AGE SEX AGE.SEX !r ANIMAL
+```
+
 # Testing significance of random effects
+
+## Using MCMCglmm
+
+## Using ASReml
 
 # Calculating heritability
 
+## Using MCMCglmm
+
+## Using ASReml
+
 # Repeated measures
 
+## Using MCMCglmm
+
+## Using ASReml
+
 # Bivariate models
+
+## Using MCMCglmm
+
+## Using ASReml
+
