@@ -20,7 +20,7 @@ tags: [Literature, Animal model, Quantitative genetics]
 
 ### Falconer & Mackay (1996).Introduction to Quantitative Genetics. 4th edition. Pearson UK.
 
-<img style="float: left" src="/images/fm.jpg" /> _An easy to read, yet thorough introduction to the concepts and methods of quantitative genetics._
+<img align="left" src="/images/fm.jpg" /> _An easy to read, yet thorough introduction to the concepts and methods of quantitative genetics._
 
 
 ### Lynch & Walsh (1998). Genetics and Analysis of Quantitative Traits. Sinauer.
