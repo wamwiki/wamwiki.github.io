@@ -21,9 +21,12 @@ tags: [Literature, Animal model, Quantitative genetics]
 
 ### Falconer & Mackay (1996).Introduction to Quantitative Genetics. 4th edition. Pearson UK.
 
+<p>
 <img align="left" height="100" src="/images/fm.jpg"> 
 
 _An easy to read, yet thorough introduction to the concepts and methods of quantitative genetics._
+
+</p>
 
 ---
 
