@@ -19,8 +19,5 @@ In particular, it demonstrate the use of _*the animal model*_, a statistical mod
 
 An animal model uses the information on the resemblance among individuals of known relatedness to estimate how genes influence phenotypes. A major difference from other quantitative genetic methods - which are also based on this principle - is that an animal model is not restricted to one level of relatedness (e.g. parent-offspring). Instead, animal models simultaneously describe the resemblance among all individuals in a given data set, irrespective of their level of relatedness. One is thus able to make optimal use of the often complex and patchy pedigrees obtained from monitoring in wild populations.
 
-*This site currently contains:*
-- [Animal model tutorials](/quick_reference/)
-- [Quick reference code](//)
-- [Links to useful resources](//)
-- [Contact information](//)
+If you are looking for some simple code to get started, go here: [Animal model tutorials](/quick_reference/).
+
