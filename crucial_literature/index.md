@@ -29,6 +29,9 @@ _Very detailed and technical description of the quantitative genetic theory and 
 
 ### [Walsh & Lynch (2018).  Evolution and Selection of Quantitative Traits. Oxford University Press](https://global.oup.com/academic/product/evolution-and-selection-of-quantitative-traits-9780198830870?cc=au&lang=en&).
 
+<figure>
+	<img src="/images/lw2.jpeg">
+</figure>
 _The long-awaited volume two of the previous book. Covers many topics even more relevant to evolutionary ecologists: rates and limits to evolutionary responses, multivariate selection and evolution, Genetic-by-Environment interactions... An absolute reference for evolutionary quantitative genetics_
 
 ### [Anne Charmantier, Dany Garant, & Loeske E. B. Kruuk (2014). Quantitative Genetics in the Wild. Oxford University Press](https://global.oup.com/academic/product/quantitative-genetics-in-the-wild-9780199674237?cc=au&lang=en&)
