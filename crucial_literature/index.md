@@ -25,6 +25,10 @@ _An easy to read, yet thorough introduction to the concepts and methods of quant
 
 ### Lynch & Walsh (1998). Genetics and Analysis of Quantitative Traits. Sinauer.
 
-_Very detailed and technical description of the quantitative genetic theory and of the estimation methods. The volume two (which should be published soon, or so they have kept saying for 15 years) contains many topics even more relevant to evolutionary ecologists: rates and limits to evolutionary responses, multivariate selection and evolution, Genetic-by-Environment interactions... in the meantime, the drafts have been accessible online at [http://nitro.biosci.arizona.edu/zbook/NewVolume_2/newvol2.html](http://nitro.biosci.arizona.edu/zbook/NewVolume_2/newvol2.html)_
+_Very detailed and technical description of the quantitative genetic theory and of the estimation methods. 
+
+### [Walsh & Lynch (2018).  Evolution and Selection of Quantitative Traits. Oxford University Press](https://global.oup.com/academic/product/evolution-and-selection-of-quantitative-traits-9780198830870?cc=au&lang=en&).
+
+_The long-awaited volume two of the previous book. Covers many topics even more relevant to evolutionary ecologists: rates and limits to evolutionary responses, multivariate selection and evolution, Genetic-by-Environment interactions... An absolute reference for evolutionary quantitative genetics_
 
 ## Classic papers
