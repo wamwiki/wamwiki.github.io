@@ -135,9 +135,54 @@ SIZE ~ mu  AGE SEX AGE.SEX !r ANIMAL
 # Testing significance of random effects
 
 ## Using MCMCglmm
+MCMCglmm, and more in general Bayesian methods, do not provide a simple, consensual way to test the statistical significance of a variance parameters. Indeed, variances parameters are constrained to be positive, and their credible intervals (e.g., as returned by HPDinterval()) cannot include exactly zero (although it may look like it due to rounding. Covariance and correlation parameters do not have this issue because they are not constrained to be positive and their credible interval can be used to estimate the probability that they are positive or negative.
+The old WAMBAM website recommended to compare DIC (Deviance Information Criterion, analog to AIC) across models with and without a random effect. However, DIC may be focused at different levels of a mixed model, and is calculated for the lowest level of the hierarchy in MCMCglmm, which may not be appropriate for comparing different random effect structures.
+
 
 ## Using ASReml
+In ASReml statistical the significance of a variance parameter can be tested using a Likelihood Ratio Test. Fit a model with and without a particular random effect. Then use log likelihoods reported in the primary results file to perform a ratio test.
 
+In ASReml standalone:
+
+```r
+ASReml analysis of size  						 
+
+   ANIMAL       !P 
+   SIZE
+   SEX          !A  #sex as a factor
+
+pedigreedata.ped      !skip 1   
+phenotypicdata.dat    !skip 1    !dopart 1 #change part to be run required
+ 
+!part 1
+SIZE ~ mu SEX !r ANIMAL  RANDOMEFFECT
+
+!part 2
+SIZE ~ mu SEX !r ANIMAL
+```
+
+From R:
+
+```r
+model1<-asreml(fixed=SIZE~1+SEX
+           ,random=~ped(ANIMAL,var=T,init=1)+RANDOMEFFECT
+           ,data=phenotypicdata
+           ,ginverse=list(ANIMAL=ainv), na.method.X="omit', na.method.Y="omit')
+
+model2<-asreml(fixed=SIZE~1+SEX
+           ,random=~ped(ANIMAL,var=T,init=1)
+           ,data=phenotypicdata
+           ,ginverse=list(ANIMAL=ainv), na.method.X="omit', na.method.Y="omit')
+
+#calculate the chi-squared stat for the log-likelihood ratio test
+2*(model1$loglik-model2$loglik) 
+
+#calculate the associated significance
+1-pchisq(2*(model1$loglik-model2$loglik),df=1)
+```
+
+However, this test is conservative with 1 degree of freedom. Using df=0.5 gives a better (but still a bit conservative) test.
+ 
 # Calculating heritability
 
 ## Using MCMCglmm
