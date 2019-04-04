@@ -187,17 +187,40 @@ However, this test is conservative with 1 degree of freedom. Using df=0.5 gives 
 
 ## Using MCMCglmm
 
+```r
+
+posterior.heritability1.1<-model1.1$VCV[,"animal"]/
+             (model1.1$VCV[,"animal"]+model1.1$VCV[,"units"])
+
+HPDinterval(posterior.heritability1.1,0.95)
+
+posterior.mode(posterior.heritability1.1)
+
+plot(posterior.heritability1.1)
+```
+
 ## Using ASReml
 
-# Repeated measures
+In ASReml standalone:
+In ASReml a second command file (with extension .pin) is used to caculate functions of estimated variance components ad their associated standard errors. So for a model in the .as file such as
 
-## Using MCMCglmm
+```r
+SIZE ~ mu ! ANIMAL
+```
 
-## Using ASReml
+the primary output file (.asr) will contain two variance components. The first will be the ANIMAL (i.e. additive genetic component), the second will be the residual variance. A .pin file to calculate heritability from these components migt be
 
-# Bivariate models
+```r
+F VP 1+2  #adds components 1 and 2 to make a 3rd variance denoted VP
+H h2 1 3  #divides 1 (VA) by 3 (VP) to calculate h2
+```
 
-## Using MCMCglmm
+NOTE - if you change the random effects stucture of your model in .as you need to modify the .pin file accordingly or you will get the wrong answer!
 
-## Using ASReml
+
+From R:
+
+```r
+summary(model)$varcomp[1,3]/sum(summary(model)$varcomp[,3])
+```
 
