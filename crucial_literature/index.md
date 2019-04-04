@@ -24,27 +24,39 @@ tags: [Literature, Animal model, Quantitative genetics]
 
 _An easy to read, yet thorough introduction to the concepts and methods of quantitative genetics._
 
-<br><br><br><br>
+<br><br>
 
 ---
 
+<img style="float: right" height="60" src="/images/lw1.jpeg" />
+
 ### Lynch & Walsh (1998). Genetics and Analysis of Quantitative Traits. Sinauer.
 
-<img style="float: right" height="60" src="/images/lw1.jpeg" /> _Very detailed and technical description of the quantitative genetic theory and of the estimation methods._
+_Very detailed and technical description of the quantitative genetic theory and of the estimation methods._
 
 <br><br>
+
+---
+
+<img style="float: left" height="60" src="/images/lw2.jpeg" />
 
 ### [Walsh & Lynch (2018).  Evolution and Selection of Quantitative Traits. Oxford University Press](https://global.oup.com/academic/product/evolution-and-selection-of-quantitative-traits-9780198830870?cc=au&lang=en&).
 
-<img style="float: left" height="60" src="/images/lw2.jpeg" /> _The long-awaited volume two of the previous book. Covers many topics even more relevant to evolutionary ecologists: rates and limits to evolutionary responses, multivariate selection and evolution, Genetic-by-Environment interactions... An absolute reference for evolutionary quantitative genetics_
+_The long-awaited volume two of the previous book. Covers many topics even more relevant to evolutionary ecologists: rates and limits to evolutionary responses, multivariate selection and evolution, Genetic-by-Environment interactions... An absolute reference for evolutionary quantitative genetics_
 
 <br><br>
+
+---
+
+<img style="float: right" height="60" src="/images/wqg.jpeg" /> 
 
 ### [Anne Charmantier, Dany Garant, & Loeske E. B. Kruuk (2014). Quantitative Genetics in the Wild. Oxford University Press](https://global.oup.com/academic/product/quantitative-genetics-in-the-wild-9780199674237?cc=au&lang=en&)
 
-<img style="float: right" height="60" src="/images/wqg.jpeg" /> _This textbook summarizes two decades of quantitative genetic studies in wild populations and contains several key studies not published elsewhere. You must have this one, it is an easy read, and the most relevant book published to date (in term of quantitative genetics in the wild at least)._
+_This textbook summarizes two decades of quantitative genetic studies in wild populations and contains several key studies not published elsewhere. You must have this one, it is an easy read, and the most relevant book published to date (in term of quantitative genetics in the wild at least)._
 
 <br><br>
+
+---
 
 ## Classic papers
 
