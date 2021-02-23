@@ -1,0 +1,65 @@
+Definitions
+Sample code in the following examples includes the following variables
+
+Response variable: Size
+Fixed effects: Intercept (mu), SIZE, SEX and AGE
+Random effects: Additive genetic variance
+Data containing phenotypic information: phenotypicdata
+Data containing pedigree data:pedigreedata
+
+Sample Code
+
+MCMCglmm
+
+Addition of a fixed effect is most easily accomplished by simply adding it to the fixed effects (so far only occupied by the population mean) section of the model specification. In general, priors on fixed effects will not be necessary.
+
+#Same prior as before
+prior1.1<-list(G=list( G1=list(V=1,n=0.002)), R=list(V=1,n=0.002))
+
+model1.2<-MCMCglmm(BWT~SEX*AGE, #adding the fixed effects age sex, age, and their interaction, using standard R model code
+                       random=~animal,
+                       pedigree=pedigreedata,data=phenotypicdata,prior=prior1.1,
+                       nitt=65000,thin=50,burnin=15000,verbose=FALSE)
+summary(model1.2)
+plot(model1.2)
+
+#Note modes are more appropriate than means
+posterior.mode(model1.2$Sol[,"SEX2"])
+
+HPDinterval(model1.2$Sol[,"SEX2"],0.95)
+
+posterior.mode(model1.2$VCV)
+
+posterior.heritability1.2<-model1.2$VCV[,"animal"]/
+                (model1.2$VCV[,"animal"]+model1.2$VCV[,"units"])
+posterior.mode(posterior.heritability1.2)
+
+HPDinterval(posterior.heritability1.2,0.95)
+
+ASReml-R
+model<-asreml(fixed=SIZE~1+SEX*AGE,
+           random=~ped(ANIMAL,var=T,init=1),
+           data=phenotypicdata,
+           ginverse=list(ANIMAL=ainv), na.method.X="omit', na.method.Y="omit')
+
+#test significance of fixed effects using
+wald.asreml(model, ssType="conditional", denDF="numeric")
+
+ASReml
+To add fixed effects to a univariate model, simply modify the model specification to include any additional fixed effects before the random effects structure. The data file must have a column for each fixed covariate to be fitted. Significance of fixed effects can be tested with conditional or incremental Wald tests.
+
+ASReml analysis of size  
+ ANIMAL       !P 
+ SIZE
+ SEX         !A  #denotes a factor
+ AGE          #here treated as a linear effect
+
+pedigreedata.ped      !skip 1   
+phenotypicdata.dat    !skip 1    !DDF 1 !FCON #specifies method of sig testing
+ 
+SIZE ~ mu  AGE SEX AGE.SEX !r ANIMAL #Interactions are fitted long-hand in ASReml, using a "."
+
+
+
+
+
