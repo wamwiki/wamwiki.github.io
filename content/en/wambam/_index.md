@@ -1,18 +1,22 @@
-
 ---
-title: "About WAMWIKI"
-linkTitle: "About"
+title: "About WAMBAM"
+linkTitle: "Meetings"
 weight: 20
 menu:
   main:
     weight: 10
-    
+   
 ---
 
+{{< blocks/cover title="WAMBAM" image_anchor="bottom" height="min" >}}
 
+<p class="lead mt-5">Wild Animal Model Bi-Annual Meeting
+</p>
+
+{{< /blocks/cover>}}
 
 {{% blocks/lead %}}
-Goldydocs is a sample site using the <a href="https://github.com/google/docsy">Docsy</a> Hugo theme that shows what it can do and provides you with a template site structure. It’s designed for you to clone and edit as much as you like. See the different sections of the documentation and site for more ideas.
+We should describe WAMBAM meeting and add more info here
 {{% /blocks/lead %}}
 
 
