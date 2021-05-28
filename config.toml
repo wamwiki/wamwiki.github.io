@@ -1,5 +1,5 @@
 baseURL = "https://wamwiki.github.io/"
-title = "WAMWIKI"
+title = "WAMWiki"
 
 enableRobotsTXT = true
 
@@ -53,7 +53,7 @@ id = "UA-00000000-0"
 
 [languages]
 [languages.en]
-title = "WAMWIKI"
+title = "WAMWiki"
 description = "Documentation on fitting animal model in ecology"
 languageName ="English"
 # Weight used for sorting.
@@ -77,8 +77,8 @@ weight = 1
 section = ["HTML", "print"]
 
 [params]
-copyright = "The Docsy Authors"
-privacy_policy = "https://policies.google.com/privacy"
+copyright = "The WAMWiki Authors"
+# privacy_policy = "https://policies.google.com/privacy"
 
 # First one is picked as the Twitter card image if not set on page.
 # images = ["images/project-illustration.png"]
@@ -145,8 +145,8 @@ footer_about_disable = false
 [params.ui.feedback]
 enable = true
 # The responses that the user sees after clicking "yes" (the page was helpful) or "no" (the page was not helpful).
-yes = 'Glad to hear it! Please <a href="https://github.com/USERNAME/REPOSITORY/issues/new">tell us how we can improve</a>.'
-no = 'Sorry to hear that. Please <a href="https://github.com/USERNAME/REPOSITORY/issues/new">tell us how we can improve</a>.'
+yes = 'Glad to hear it! Please <a href="https://github.com/wamwiki/wamwiki.github.io/issues/new">tell us how we can improve</a>.'
+no = 'Sorry to hear that. Please <a href="https://github.com/wamwiki/wamwiki.github.io/issues/new">tell us how we can improve</a>.'
 
 # Adds a reading time to the top of each doc.
 # If you want this feature, but occasionally need to remove the Reading time from a single page, 
@@ -163,7 +163,7 @@ enable = false
         desc = "Discussion and help from your fellow users"
 [[params.links.user]]
 	name ="Twitter"
-	url = "https://example.org/twitter"
+	url = "https://twitter.com/WambamWiki"
 	icon = "fab fa-twitter"
         desc = "Follow us on Twitter to get the latest news!"
 [[params.links.user]]
@@ -174,12 +174,12 @@ enable = false
 # Developer relevant links. These will show up on right side of footer and in the community page if you have one.
 [[params.links.developer]]
 	name = "GitHub"
-	url = "https://github.com/google/docsy"
+	url = "https://github.com/wamwiki/wamwiki.github.io"
 	icon = "fab fa-github"
         desc = "Development takes place here!"
 [[params.links.developer]]
 	name = "Slack"
-	url = "https://example.org/slack"
+	url = "https://wamwiki.slack.com"
 	icon = "fab fa-slack"
         desc = "Chat with other project developers"
 [[params.links.developer]]
