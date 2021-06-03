@@ -5,6 +5,6 @@ _site/
 node_modules/
 static/
 public/
-#resources/
+resources/
 #!assets/resources/
 .Rproj.user
