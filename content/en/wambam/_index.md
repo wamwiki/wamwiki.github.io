@@ -21,7 +21,7 @@ WAMBAM is a small international workshop that happens (roughly) every two years 
 
 ## Next meeting
 
-The next meeting was scheduled to happen in Cornwall in June 2020 but was postponed due to the COVID-19 pandemic. 
+The next meeting is scheduled to happen in England in September 2023 (after having been postponed for a few years due to the COVID-19 pandemic). 
 
 
 

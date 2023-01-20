@@ -10,7 +10,7 @@ menu:
 
 {{< blocks/cover title="About WAM Wiki" image_anchor="bottom" height="min" >}}
 
-<p class="lead mt-5">A sample site using the Docsy Hugo theme.
+<p class="lead mt-5">Quantitative genetics in wild populations.
 </p>
 
 {{< /blocks/cover>}}
@@ -35,17 +35,10 @@ If you are looking for some simple code to get started, go here: Animal model tu
 {{< blocks/section >}}
 
 <div class="col-12">
-<h1 class="text-center">This is another section</h1>
+<h1 class="text-center"> </h1>
 </div>
 
 {{< /blocks/section >}} 
 
 
-## What are "Animal models"?
-
-In particular, we demonstrate the use of *the animal model*, a statistical model used to estimate genetic contributions to trait variation using population pedigrees. The animal model methodology finds its origin in animal and plant breeding, where it has been applied successfully for several decades. Since the late 1990s, an increasing number of studies have applied animal models to address evolutionary questions in wild populations.
-
-An animal model uses the information on the resemblance among individuals of known relatedness to estimate how genes influence phenotypes. A major difference from other quantitative genetic methods - which are also based on this principle - is that an animal model is not restricted to one level of relatedness (e.g. parent-offspring). Instead, animal models simultaneously describe the resemblance among all individuals in a given data set, irrespective of their level of relatedness. One is thus able to make optimal use of the often complex and patchy pedigrees obtained from monitoring in wild populations.
-
-If you are looking for some simple code to get started, go here: Animal model tutorials.
 
