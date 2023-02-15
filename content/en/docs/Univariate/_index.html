@@ -8,7 +8,9 @@ description: >
 
 
 
-<p>{{% pageinfo %}} Here we demonstrate how to fit the simplest univariate animal model to calculate the additive genetic variance component of a phenotypic variable, for example body size. In later sections we show how to build more complex models with fixed or random effects and how to compute heritability. {{% /pageinfo %}}</p>
+<p>{{% pageinfo %}}
+Here we demonstrate how to fit the simplest univariate animal model to calculate the additive genetic variance component of a phenotypic variable, for example body size. In later sections we show how to build more complex models with fixed or random effects and how to compute heritability.
+{{% /pageinfo %}}</p>
 <p>is the simplest of all animal models and assumes no repeated measures across years or individuals.</p>
 <div id="example-data" class="section level1">
 <h1>Example data</h1>
@@ -28,7 +30,8 @@ pedigreedata &lt;- read.csv(&quot;data/gryphonped.csv&quot;)</code></pre>
 <li>Data containing pedigree <a href="data:pedigreedata" class="uri">data:pedigreedata</a></li>
 </ul>
 <p>We first fit the simplest possible animal model: no fixed effects apart from the interecept, a single random effect (the breeding values, associated with the additive genetic variance), and Gaussian redisuals.</p>
-<p>{{% pageinfo %}} Here it is not too difficult to describe the model in plain English, but for more complex models a mathematical equation may prove easier, much shorter and less ambiguous. Here we could write the model as <span class="math inline">\(y_i = \mu + a_i + \epsilon_i\)</span>, where $y_i $ is the response for individual <span class="math inline">\(i\)</span>, with the residuals assumed to follow a normal distribution of mean zero and variance <span class="math inline">\(\sigma_R^2\)</span>, which we can write as <span class="math inline">\(\mathbf{\epsilon} \sim N(0,\mathbf{I}\sigma_R^2)\)</span>, where <span class="math inline">\(\mathbf{I}\)</span> is an identity matrix; and with the breeding values <span class="math inline">\(\mathbf{a} \sim N(0,\mathbf{A} \sigma_A^2\)</span>, where <span class="math inline">\(\mathbf{A}\)</span> is the pairwise additive genetic relatedness matrix.</p>
+<p>{{% pageinfo %}}
+Here it is not too difficult to describe the model in plain English, but for more complex models a mathematical equation may prove easier, much shorter and less ambiguous. Here we could write the model as <span class="math inline">\(y_i = \mu + a_i + \epsilon_i\)</span>, where $y_i $ is the response for individual <span class="math inline">\(i\)</span>, with the residuals assumed to follow a normal distribution of mean zero and variance <span class="math inline">\(\sigma_R^2\)</span>, which we can write as <span class="math inline">\(\mathbf{\epsilon} \sim N(0,\mathbf{I}\sigma_R^2)\)</span>, where <span class="math inline">\(\mathbf{I}\)</span> is an identity matrix; and with the breeding values <span class="math inline">\(\mathbf{a} \sim N(0,\mathbf{A} \sigma_A^2\)</span>, where <span class="math inline">\(\mathbf{A}\)</span> is the pairwise additive genetic relatedness matrix.</p>
 <p>{{% pageinfo %}}</p>
 <div id="using-mcmcglmm" class="section level2">
 <h2>Using MCMCglmm</h2>
@@ -48,22 +51,22 @@ model1.1&lt;-MCMCglmm(birth_weight~1, #Response and Fixed effect formula
 ##  Thinning interval  = 10
 ##  Sample size  = 1000 
 ## 
-##  DIC: 3910.265 
+##  DIC: 3914.063 
 ## 
 ##  G-structure:  ~id
 ## 
 ##    post.mean l-95% CI u-95% CI eff.samp
-## id     3.447    2.193    4.682    193.4
+## id     3.406     2.34     4.71    177.8
 ## 
 ##  R-structure:  ~units
 ## 
 ##       post.mean l-95% CI u-95% CI eff.samp
-## units     3.817    2.808    4.824    197.4
+## units     3.845    2.916      4.9    195.4
 ## 
 ##  Location effects: birth_weight ~ 1 
 ## 
 ##             post.mean l-95% CI u-95% CI eff.samp  pMCMC    
-## (Intercept)     7.594    7.306    7.864    836.8 &lt;0.001 ***
+## (Intercept)     7.592    7.322    7.889    865.2 &lt;0.001 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 </div>
