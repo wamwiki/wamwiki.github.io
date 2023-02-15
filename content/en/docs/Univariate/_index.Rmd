@@ -1,7 +1,7 @@
 ---
 title: "Simple univariate animal model"
 linkTitle: "Univariate animal model"
-weight: 1
+weight: 4
 description: >
   Fitting a simple univariate model in R.
 ---
