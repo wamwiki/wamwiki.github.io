@@ -1,35 +1,41 @@
 ---
 title: "Getting Started"
 linkTitle: "Getting Started"
-weight: 2
+weight: 3
 description: >
-  What does your user need to know to try your project?
+  Installing R, packages, loading test data
 ---
 
 {{% pageinfo %}}
-This is a placeholder page that shows you how to use this template site.
+We will need [R](https://cran.rstudio.com/index.html), some packages and some data. Here we just make sure you have all you need to get started on the Wild Animal Model adventure. [RStudio](https://posit.co/download/rstudio-desktop/) is not necessary but we may assume you use some of its functionalities. 
 {{% /pageinfo %}}
 
-Information in this section helps your user try your project themselves.
-
-* What do your users need to do to start using your project? This could include downloading/installation instructions, including any prerequisites or system requirements.
-
-* Introductory “Hello World” example, if appropriate. More complex tutorials should live in the Tutorials section.
-
-Consider using the headings below for your getting started page. You can delete any that are not applicable to your project.
 
 ## Prerequisites
 
-Are there any system requirements for using your project? What languages are supported (if any)? Do users need to already have any software or tools installed?
 
-## Installation
+To install R, see https://cran.rstudio.com/index.html.
 
-Where can your user find your project code? How can they install it (binaries, installable package, build from source)? Are there multiple options/versions they can install and how should they choose the right one for them?
+If you do not know R at all, a good place to get started may be the Carpentries courses. For instance the Data Carpentries on data analysis for ecology in R: https://datacarpentry.org/R-ecology-lesson/
+You can follow the content on your own or see if you can attend or request a course in your area (https://carpentries.org/workshops/)
 
-## Setup
+### Install the R-packages you want to use
 
-Is there any initial setup users need to do after installation to try your project?
+You can fit most models with any of the packages we present. No need to install all the packages, just pick the one (or few) you want to try. For now we will favour *MCMCglmm*, which is easy to install with a single command:
 
-## Try it out!
+```r
+install.packages("MCMCglmm")
+```
 
-Can your users test their installation, for example by running a command or deploying a Hello World example?
+Same for brms: 
+
+```r
+install.packages("brms")
+```
+
+
+Unlike the other packages, ASREML-R relies on a non-free software (ASREML). You will need a license to use it (many universities or research centers have one). If you want to work with ASREML-R see at https://vsni.co.uk/software/asreml-r.
+
+Check also asremlPlus for extra features (https://cran.r-project.org/web/packages/asremlPlus/index.html)
+
+

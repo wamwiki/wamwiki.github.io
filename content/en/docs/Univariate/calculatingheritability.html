@@ -24,32 +24,23 @@ plot(posterior.heritability1.1)</code></pre>
 </div>
 <div id="using-asreml" class="section level2">
 <h2>Using ASReml</h2>
-<p>In ASReml standalone: In ASReml a second command file (with extension .pin) is used to caculate functions of estimated variance components ad their associated standard errors. So for a model in the .as file such as</p>
+<p>In ASReml standalone:
+In ASReml a second command file (with extension .pin) is used to caculate functions of estimated variance components ad their associated standard errors. So for a model in the .as file such as</p>
 <pre class="r"><code>SIZE ~ mu ! ANIMAL</code></pre>
-<p>the primary output file (.asr) will contain two variance components. The first will be the ANIMAL (i.e. additive genetic component), the second will be the residual variance. A .pin file to calculate heritability from these components migt be</p>
+<p>the primary output file (.asr) will contain two variance components. The first will be the ANIMAL (i.e. additive genetic component), the second will be the residual variance. A .pin file to calculate heritability from these components migt be</p>
 <pre class="r"><code>F VP 1+2  #adds components 1 and 2 to make a 3rd variance denoted VP
 H h2 1 3  #divides 1 (VA) by 3 (VP) to calculate h2</code></pre>
 <p>NOTE - if you change the random effects stucture of your model in .as you need to modify the .pin file accordingly or you will get the wrong answer!</p>
 <p>From R:</p>
 <pre class="r"><code>summary(model)$varcomp[1,3]/sum(summary(model)$varcomp[,3])</code></pre>
-</div>
-</div>
-<div id="size-is-the-response-variable-and-the-only-fixed-effect-is-the-meandenoted-as1" class="section level1">
-<h1>1: SIZE is the response variable and the only fixed effect is the mean(denoted as1)</h1>
-</div>
-<div id="fit-random-effect-of-animal-va-with-an-arbitrary-starting-value-of-1" class="section level1">
-<h1>2: fit random effect of ANIMAL Va with an arbitrary starting value of 1</h1>
-</div>
-<div id="use-data-file-phenotypic-data" class="section level1">
-<h1>3: use data file phenotypic data</h1>
-</div>
-<div id="connect-the-individual-in-the-data-file-to-the-pedigree" class="section level1">
-<h1>4: connect the individual in the data file to the pedigree</h1>
-</div>
-<div id="omit-any-rows-where-the-response-or-predictor-variables-are-missing" class="section level1">
-<h1>5: omit any rows where the response or predictor variables are missing</h1>
+<p>#1: SIZE is the response variable and the only fixed effect is the mean(denoted as1)
+#2: fit random effect of ANIMAL Va with an arbitrary starting value of 1
+#3: use data file phenotypic data
+#4: connect the individual in the data file to the pedigree
+#5: omit any rows where the response or predictor variables are missing</p>
 <p>to see the estimates of the fixed effects:</p>
 <pre class="r"><code>summary(model)$coef.fixed</code></pre>
 <p>and the estimates of the random effects:</p>
 <pre class="r"><code>summary(model)$varcomp</code></pre>
+</div>
 </div>
