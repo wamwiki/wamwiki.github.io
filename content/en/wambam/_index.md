@@ -28,9 +28,7 @@ The next meeting is scheduled to happen in England in September 2023 (after havi
 
 
 {{< blocks/section color="orange" >}}
-{{% blocks/feature title="WAMBAM 6 - La Huardière, Québec" %}}
-July 2017
-
+{{% blocks/feature title="WAMBAM 6 - La Huardière, Québec" %}}July 2017
 The meeting was organized by Emmanuel Milot (UQTR) and Denis Réale (UQAM), and featured work on quantitative genetics and genomics, both conspicuously and increasingly facilitated by single nucleotide polymorphism (SNP) genotyping technologies, and discussions of the increasing potential for this work to influence other fields such as demography and conservation.  The scientific contributions were summarized in ([this Molecular Ecology article](https://onlinelibrary.wiley.com/doi/full/10.1111/mec.14510) by the loosing team in the canoe race.
 
 Day trip: Canoe trip up the lake to a beaver dam.
@@ -46,7 +44,6 @@ Non-birder wildlife highlight: Beaver dam.
 {{% /blocks/feature %}}
 {{% blocks/feature title="WAMBAM 5 - Scotland" %}}
 2014
-
 Day trip: 
 Birders highlight: Common crossbill? (**No** Scottish crossbill though)
 Non-birder highlight: Sunny Scotland almost midge-free. 
