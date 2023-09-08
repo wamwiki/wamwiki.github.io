@@ -3,7 +3,6 @@ _site/
 .jekyll-metadata
 .Rproj
 node_modules/
-static/
 public/
 resources/
 #!assets/resources/
