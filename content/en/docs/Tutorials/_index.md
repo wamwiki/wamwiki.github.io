@@ -13,3 +13,5 @@ description: >
 {{% /pageinfo %}}
 
 * Erik Postma's Animal models in ASReml-R v4 [Tutorial-ASReml-R-v4.html](Tutorial-ASReml-R-v4.html)
+
+* Julien Martin's Animal models using multiple R packages (asreml, MCMCglmm, brms, stan, gremlin) [WAM tutorial in R](https://juliengamartin.github.io/wam_tuto/)
