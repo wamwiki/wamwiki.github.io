@@ -7,7 +7,7 @@ description: >
 ---
 
 {{% pageinfo %}}
-For this tutorial we will use the simulated gryphon dataset ([download gryphon data as zip file](data/gryphons.zip)).
+For this tutorial we will use the simulated gryphon dataset ([download gryphon data as zip file](/docs/data/gryphons.zip)).
 {{% /pageinfo %}}
 
 
