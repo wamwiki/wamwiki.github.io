@@ -158,7 +158,7 @@ enable = false
 # End user relevant links. These will show up on left side of footer and in the community page if you have one.
 [[params.links.user]]
 	name = "Wamwiki forum"
-	url = "https://www.lifelovedeath.net/wamwiki/forum/index.php"
+	url = "https://forum.wildanimalmodels.org/"
 	icon = "fab fa-stack-overflow"
         desc = "Discussion and help from your fellow users"
 [[params.links.user]]
