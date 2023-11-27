@@ -1,0 +1,16 @@
+---
+title: "Meeting 27 November 2023"
+author: "Timothée Bonnet"
+date: "2023-11-27"
+output: html_document
+---
+
+# Agenda
+
+* Introduction and check people know each other
+* Show current website
+* Show Github repos
+* Discuss organisation:
+  * Regular meetings? At least for some time once a month?
+  * Keeping that Hugo/Github system?
+  
