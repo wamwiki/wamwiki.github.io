@@ -25,6 +25,6 @@ An animal model uses the information on the resemblance among individuals of kno
 {{% /blocks/section %}} 
 
 {{% blocks/section color="white" %}} 
-If you are looking for some simple code to get started, go to [**Animal model tutorials**](wildanimalmodels.org/docs/).
+If you are looking for some simple code to get started, go to [**Animal model tutorials**](https://wildanimalmodels.org/about/).
 {{% /blocks/section %}} 
 
