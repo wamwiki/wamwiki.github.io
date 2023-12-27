@@ -9,8 +9,9 @@ menu:
 ---
 
 {{% pageinfo %}}
-This is a quick reference guide to fit and interpret animal models. 
+This website is under construction. If you want to learn how to fit and interpret animal models, we can recommend this tutorial [https://juliengamartin.github.io/wam_tuto/](https://juliengamartin.github.io/wam_tuto/)
 {{% /pageinfo %}}
+
 
 Animal models can be fitted by a variety of software. Currently we present only workflows using the statistical software [R](https://cran.r-project.org/) using a few specialised packages widely used by the community of wild animal quantitative geneticists: MCMCglmm, ASReml-R, brms, Stan.
 
