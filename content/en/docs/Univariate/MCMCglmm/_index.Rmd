@@ -1,0 +1,73 @@
+---
+title: "Univariate animal model using MCMCglmm"
+linkTitle: "MCMCglmm"
+weight: 5
+description: >
+  Univariate animal model using MCMCglmm.
+output: 
+  html_document: 
+    keep_md: yes
+---
+
+
+# Example data
+
+We will use the simulated gryphon dataset ([download zip file](data/gryphons.zip)).
+
+We need to load both the phenotypic data `gryphon.csv` and the pedigree `gryphonped.csv`.
+
+```{r}
+phenotypicdata <- read.csv("data/gryphon.csv")
+pedigreedata <- read.csv("data/gryphonped.csv")
+```
+
+The phenotypic data look like this:
+
+```{r}
+head(phenotypicdata)
+```
+
+We will use `birth_weight` as a response variable.
+
+And the pedigree looks like this:
+
+```{r}
+head(pedigreedata)
+tail(pedigreedata)
+```
+
+
+# Simplest animal model
+
+Here is the simplest implementation of an animal model in MCMCglmm. 
+
+First, we load the package:
+
+```{r, cache=TRUE, message=FALSE, results='hide'}
+library(MCMCglmm)
+```
+
+Second, while not strictly necessary we think it is a good practice to convert the pedigree to an inverse-relatedness matrix. If the pedigree is properly formatted this is easily done with `MCMCglmm::inverseA`. The other option is to pass the pedigree directly in the `pedigree` argument of the function `MCMCglmm`, but that solution is less flexible.
+
+```{r, cache=TRUE}
+inverseAmatrix <- inverseA(pedigree = pedigreedata)$Ainv
+```
+
+Now we can fit the model of `birth_weight` to estimate three parameters:
+
+* an additive genetic variance (corresponding to the `id` column) 
+* a residual variance
+* an intercept
+
+```{r, cache=TRUE, message=FALSE, results='hide'}
+model1.1<-MCMCglmm(birth_weight~1, #Response and Fixed effect formula
+                   random=~id, # Random effect formula
+          ginverse = list(id=inverseAmatrix), # correlations among random effect levels (here breeding values)
+          data=phenotypicdata)# data set
+```
+
+Note the use of the argument `ginverse` to link the elements of the relatedness matrix to the individual identity in the phenotypic data.
+
+```{r}
+summary(model1.1)
+```
