@@ -1,6 +1,6 @@
 ---
 title: "Simple univariate animal model"
-linkTitle: "Univariate animal model"
+linkTitle: "Simple univariate animal model"
 weight: 4
 description: >
   Fitting a simple univariate model in R.
@@ -10,7 +10,7 @@ output:
 ---
 
 {{% pageinfo %}}
-Here we demonstrate how to fit the simplest univariate animal model. The model will only partition phenotypic variance into an additive genetic variance and a residual variance.
+Here we demonstrate how to fit the simplest univariate linear animal model. 
 {{% /pageinfo %}}
 
 
