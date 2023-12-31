@@ -115,18 +115,17 @@ Let's look at the results.
 It is always a good idea to look at the trace of the MCMC sampling. Ideally we want to see "hairy caterpillars" for each parameter, that is, a stationary distribution without long-term or short-term trends across iterations. This lack of trend would indicate that the model may have converged and may have explored properly the multivariate parameter space, thus giving us reliable parameter estimates.
 
 
-
 ```r
 plot(model1.1, density=FALSE)
 ```
 
 ![](_index_files/figure-html/model1.1-plot-1.png)<!-- -->![](_index_files/figure-html/model1.1-plot-2.png)<!-- -->
 
-{{% imgproc /_index_files/figure-html/model1.1-plot-1.png Fill %}}
+{{% imgproc _index_files/figure-html/model1.1-plot-1.png Fit "400x450" %}}
 Intercept
 {{% /imgproc %}}
 
-{{% imgproc /_index_files/figure-html/model1.1-plot-2.png Fit %}}
+{{% imgproc _index_files/figure-html/model1.1-plot-2.png Fit "400x450" %}}
 Random effect and residual
 {{% /imgproc %}}
 
