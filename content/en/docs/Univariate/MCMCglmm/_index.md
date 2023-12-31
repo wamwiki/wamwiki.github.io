@@ -121,9 +121,6 @@ plot(model1.1, density=FALSE)
 
 ![](_index_files/figure-html/model1.1-plot-1.png)<!-- -->![](_index_files/figure-html/model1.1-plot-2.png)<!-- -->
 
-{{% imgproc _index_files/figure-html/model1.1-plot-1.png Fit "400x450" %}}
-
-{{% imgproc _index_files/figure-html/model1.1-plot-2.png Fit "400x450" %}}
 
 Here the traces of the random effect variance `id` and of the residual variance are not bad but show an initial trend as well as some fluctuations. We are going to re-run the model for longer to avoid those problems before we look at the results.
 
