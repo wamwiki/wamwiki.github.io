@@ -125,4 +125,7 @@ HPDinterval(model1.2$VCV[, "id"])
 ```
 
 
-
+```{r, echo=FALSE, message=FALSE, }
+list.of.files <- list.files(path = "_index_files/figure-html/", pattern = "*.png", full.names = TRUE)
+file.copy(from = list.of.files, to = ".", overwrite = TRUE, )
+```
