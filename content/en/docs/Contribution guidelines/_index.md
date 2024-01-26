@@ -8,27 +8,26 @@ description: >
 
 {{% pageinfo %}}
 
-{{% /pageinfo %}}
+We use **Hugo**, an open-source static site generator. 
 
-We use Hugo, an open-source static site generator that provides us with templates, 
-content organisation in a standard directory structure, and a website generation 
-engine. 
-We write documentation pages in R-Markdown and knit them to Markdown so that Hugo can use them.
-You can also write the pages directly in Markdown, or HTML if you want.
-Hugo takes all the Markdown files, applies the theme and wraps everything up into a website.
+Hugo takes **Markdown** or **HTML** pages, applies a theme, and wraps everything up into a website.
 
+We prefer to write documentation pages in **R-Markdown** so that we can easily combine text, equations, R-code and R-output.
+We then knit the **R-Markdown** pages into **Markdown** so that Hugo can use them.
 
 All submissions, including submissions by project members, require review. We
-use GitHub pull requests for this purpose. Consult
+use **GitHub pull requests** for this purpose. Consult
 [GitHub Help](https://help.github.com/articles/about-pull-requests/) for more
 information on using pull requests.
 
-If you are not familiar with Git or Github you can send your contributions by email to one of us.
+**If you are not familiar with Git, Github, R-Markdown you can send your contributions by email to wambamwiki@gmail.com.**
+
+{{% /pageinfo %}}
 
 
 ## Quick start
 
-Here's a quick guide to updating the docs. It assumes you're familiar with the
+Here's a quick guide to updating the Reference code and tutorial pages. It assumes you're familiar with the
 GitHub workflow and you're happy to use the automated preview of your doc
 updates:
 
@@ -45,10 +44,21 @@ A brief summary of all the steps needed to get started or refresh your memory.
 	* linkTitle (what url to the page look like, within quotation marks)
 	* weight (the higher the weidht the lower the page link in side menus, just a number)
 	* description (what textual links to the page look like, **no** quotation marks but start with ">" then starts a new line, see example below or in the source Markdown files)
+	* Important: You must insure that a Markdown file is kept after kniting as Hugo works on Markdown, not R-Markdown. To do that, in RStudio go to `Edit the R Markdown format options for the current file` (that is the little cogwheel right of the knit button) -> `Output Options...` -> `Advanced` and check `Keep markdown source file`. Alternatively, you can just add the following to your YAML:
+ ```
+ output: 
+   html_document: 
+     keep_md: yes
+ ```
+ 
 
-Go to Output 
-1. Write a working .Rmd file, that maybe runs models and shows results.
-1. Knit the file
+<span>2.</span>  Write a working .Rmd file, that maybe runs models and shows R-outputs. If you need to include plots though you will need an extra trick (see next section)
+
+<span>3.</span> Knit the file
+
+## How to include R plots?
+
+TBD
 
 ## Updating a single page
 
