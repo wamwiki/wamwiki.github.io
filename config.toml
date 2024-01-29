@@ -4,7 +4,6 @@ title = "WAMWiki"
 enableRobotsTXT = true
 
 # Hugo allows theme composition (and inheritance). The precedence is from left to right.
-theme = ["docsy"]
 
 # Will give values to .Lastmod etc.
 enableGitInfo = true
@@ -16,7 +15,7 @@ defaultContentLanguageInSubdir = false
 # Useful when translating.
 enableMissingTranslationPlaceholders = true
 
-disableKinds = ["taxonomy", "taxonomyTerm"]
+disableKinds = ["taxonomy"]
 
 # Highlighting config
 pygmentsCodeFences = true
@@ -73,8 +72,8 @@ weight = 1
 # Everything below this are Site Params
 
 # Comment out if you don't want the "print entire section" link enabled.
-[outputs]
-section = ["HTML", "print"]
+#[outputs]
+#section = ["HTML", "print"]
 
 [params]
 copyright = "The WAMWiki Authors"
@@ -188,4 +187,14 @@ enable = false
 #	icon = "fa fa-envelope"
 #        desc = "Discuss development issues around the project"
 #
-#theme = "docsy"
+
+# added when removing submodules
+# need to be at the end or at least after the [langauges]
+[module]
+  proxy = "direct"
+  [module.hugoVersion]
+    extended = true
+    min = "0.73.0"
+  [[module.imports]]
+    path = "github.com/google/docsy"
+    disable = false
