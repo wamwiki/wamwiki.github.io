@@ -30,12 +30,12 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      HUGO_VERSION: 0.108.0
+      HUGO_VERSION: 0.112.0
     steps:
       - name: setup Go
         uses: actions/setup-go@v5
-          with:
-            go-version: '1.21.6' #
+        with:
+          go-version: '1.21.6' #
       - name: setup Hugo
         run: sudo snap install hugo
       - name: Checkout
