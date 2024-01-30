@@ -8,3 +8,4 @@ resources/
 #!assets/resources/
 .Rproj.user
 themes/docsy/
+.hugo_build.lock
