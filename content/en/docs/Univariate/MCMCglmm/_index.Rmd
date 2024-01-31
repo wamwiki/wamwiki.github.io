@@ -9,10 +9,13 @@ output:
     keep_md: yes
 ---
 
+```{r setup_fig, include=FALSE}
+knitr::opts_chunk$set(fig.path = "plots/")
+```
 
 # Example data
 
-We will use the simulated gryphon dataset ( [download zip file](/docs/data/gryphons.zip) ).
+We will use the simulated gryphon dataset ([download zip file](/docs/data/gryphons.zip) ).
 
 We need to load both the phenotypic data `gryphon.csv` and the pedigree `gryphonped.csv`.
 
