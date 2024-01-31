@@ -9,3 +9,5 @@ resources/
 .Rproj.user
 themes/docsy/
 .hugo_build.lock
+*_cache/
+*_files/
