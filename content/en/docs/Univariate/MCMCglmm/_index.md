@@ -10,6 +10,7 @@ output:
 ---
 
 
+
 # Example data
 
 We will use the simulated gryphon dataset ( [download zip file](/docs/data/gryphons.zip) ).
@@ -119,7 +120,7 @@ It is always a good idea to look at the trace of the MCMC sampling. Ideally we w
 plot(model1.1, density=FALSE)
 ```
 
-![](_index_files/figure-html/model1.1-plot-1.png)<!-- -->![](_index_files/figure-html/model1.1-plot-2.png)<!-- -->
+![](plots/model1.1-plot-1.png)<!-- -->![](plots/model1.1-plot-2.png)<!-- -->
 
 ![](model1.1-plot-1.png)<!-- -->![](model1.1-plot-2.png)<!-- -->
 
@@ -142,7 +143,7 @@ model1.2 <- MCMCglmm(birth_weight ~ 1, #Response and Fixed effect formula
 plot(model1.2, density=FALSE)
 ```
 
-![](_index_files/figure-html/model1.2-plot-1.png)<!-- -->![](_index_files/figure-html/model1.2-plot-2.png)<!-- -->
+![](plots/model1.2-plot-1.png)<!-- -->![](plots/model1.2-plot-2.png)<!-- -->
 
 ![](model1.2-plot-1.png)<!-- -->![](model1.2-plot-2.png)<!-- -->
 
@@ -217,3 +218,6 @@ HPDinterval(model1.2$VCV[, "id"])
 
 
 
+```
+## [1] TRUE TRUE TRUE TRUE
+```
