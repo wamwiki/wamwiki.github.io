@@ -53,7 +53,7 @@ We thus suggest to create a folder in the appropriate location within `content/e
 
 ### Initialise a .Rmd file 
 
-To make your life easier, you can download a [short `.Rmd` file](/docs/Starter.Rmd) with the suggested structure of the frontmatter and suggested knitr options [here](/docs/Starter.Rmd).
+To make your life easier, you can download a [short `.Rmd` file](/docs/starter.Rmd) with the suggested structure of the frontmatter and suggested knitr options [here](/docs/starter.Rmd).
 
 Your file frontmatter should include at least the following properties in the YAML
 
