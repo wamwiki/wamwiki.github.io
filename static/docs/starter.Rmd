@@ -1,0 +1,31 @@
+---
+title: "Name of your QG tutorial"
+linkTitle: "Heritability of Magical beast"
+author: "Wam community extraordinaire"
+weight: 4
+math: true
+description: >
+  Fitting a simple animal model of unicorn color preference.
+output: 
+  html_document: 
+    keep_md: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  fig.path = "",
+  cache = TRUE
+  )
+```
+
+# Why unicorns are the best?
+
+* Eating candies
+* Riding rainbows
+* Soooooooooooo fluuuuuuffy
+
+
+```{r}
+my_dat <- read.csv("mydata.csv")
+knitr::include_graphics("cute_image.jpg")
+```
