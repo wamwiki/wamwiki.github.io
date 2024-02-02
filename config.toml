@@ -54,7 +54,7 @@ id = "UA-00000000-0"
 [languages.en]
 [languages.en.params]
 title = "WAMWiki"
-description = "Documentation on fitting animal models in ecology"
+description = "Documentation on quantitative genetics animal models working with wild populations"
 languageName ="English"
 # Weight used for sorting.
 weight = 1
