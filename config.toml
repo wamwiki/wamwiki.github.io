@@ -52,8 +52,9 @@ id = "UA-00000000-0"
 
 [languages]
 [languages.en]
+[languages.en.params]
 title = "WAMWiki"
-description = "Documentation on fitting animal models in ecology"
+description = "Documentation on quantitative genetics animal models working with wild populations"
 languageName ="English"
 # Weight used for sorting.
 weight = 1
@@ -116,7 +117,7 @@ github_repo = "https://github.com/wamwiki/wamwiki.github.io"
 gcs_engine_id = "011737558837375720776:fsdu1nryfng"
 
 # Enable Algolia DocSearch
-algolia_docsearch = false
+params.search.algolia = false
 
 # Enable Lunr.js offline search
 offlineSearch = false

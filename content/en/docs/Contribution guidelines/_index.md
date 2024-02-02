@@ -3,7 +3,7 @@ title: "Contribution Guidelines"
 linkTitle: "Contribution Guidelines"
 weight: 100
 description: >
-  How to contribute to this website
+  How to contribute to the WAMWiki
 ---
 
 {{% pageinfo %}}
@@ -24,20 +24,21 @@ information on using pull requests.
 
 {{% /pageinfo %}}
 
-## Quick start
+## Quick guide
 
 Here's a quick guide to updating the Reference code and tutorial pages. It assumes you're familiar with the
 GitHub workflow and explain [how to configure the automated preview](#setup-hugo) of your doc updates.
 
 
 1. Fork the [wamwiki.github.io  repo](https://github.com/wamwiki/wamwiki.github.io) on GitHub.
+1. Clone the repository locally.
 1. Create a folder for your tutorial located within `content/en/docs/` or a subdirectory within.
-1. Add a `_index.Rmd` file, `data` and `images` files as needed within the same folder **not** in subfolders
-1. Knit the `.Rmd` to get the `.md` `.html` and plot files
+1. Add a `_index.Rmd` file, `data` and `images` files as needed within the same folder **not** in subfolders.
+1. Knit the `.Rmd` to get the `.md` `.html` and plot files.
 1. Check that everything looks good on a [local site](#check-local) or at least on the `.html` file produced.
-1. Create a pull request to get your changes merged into the main branch and update the website.Your PR should include at least the `.Rmd`, `.md` files as well as the `data`, `plots` and `images` files if needed
+1. Create a pull request to get your changes merged into the main branch and update the website. Your PR should include at least the `.Rmd`, `.md` files as well as the `data`, `plots` and `images` files if needed to knit the `.Rmd`.
 
-## Workflow from .Rmd to a working webpage
+## Detailled workflow from .Rmd to a working webpage
 
 A brief explanation of all the steps needed to get started or refresh your memory.
 
@@ -49,21 +50,26 @@ When building the website `Hugo` is looking for `.md` within the `/content/en/` 
 
 In most cases, having a folder with `_index.md` is the easiest for navigation and folder structure.
 
-We thus suggest to create a folder in the appropriate location within `content/en` containing a file `_index.Rmd`.
+We thus suggest to create a folder in the appropriate location within `content/en` containing a file `_index.Rmd`. 
+
+We expect most contributions in the [Reference code and tutorials](/docs/) part of the website, which corresponds to what is in the folder `content/en/docs`. The other folders within `content/en` correspond to general information about the website, the community and meetings, and should be much more stable.
 
 ### Initialise a .Rmd file 
+
+{{% alert title=".Rmd or .md?"  color="info"%}}Most pages should be written as  `.Rmd` files, and then knitted to `.md` files, because this facilitates including code and model results. The only exceptions are the page you are currently reading ([/docs/contribution-guidelines](/docs/contribution-guidelines) ) and pages outside the [Reference code and tutorials](/docs/) as we do not expect them to contain code. For those pages you can work directly on a `.md` file.
+{{% /alert %}}
 
 To make your life easier, you can download a [short `.Rmd` file](/docs/starter.Rmd) with the suggested structure of the frontmatter and suggested knitr options [here](/docs/starter.Rmd).
 
 Your file frontmatter should include at least the following properties in the YAML
 
-  * title (what appears at the top of the page, within quotation marks)
-  * linkTitle (what url to the page look like, within quotation marks)
-  * author: your name
-  * weight (the higher the weight the lower the page link in side menus, just a number)
-  * description (what textual links to the page look like, **no** quotation marks but start with ">" then starts a new line, see example below or in the source Markdown files)
-  * math: true/false if you have any equations
-  * output: should be html and specify the option to keep the md file. You must insure that a Markdown file is kept after kniting as Hugo works on Markdown, not R-Markdown. In RStudio, it can be done if you go to `Edit the R Markdown format options for the current file` (that is the little cogwheel right of the knit button) -> `Output Options...` -> `Advanced` and check `Keep markdown source file`.
+  * `title`: what appears at the top of the page, within quotation marks
+  * `linkTitle`: what url to the page look like, within quotation marks
+  * `author`: your name
+  * `weight`: the higher the weight the lower the page link in side menus, just a number
+  * `description`: what textual links to the page look like, **no** quotation marks but start with ">" then starts a new line, see example below or in the source Markdown files
+  * `math`: true/false if you have any equations
+  * `output`: should be html and specify the option to keep the md file. You must insure that a Markdown file is kept after kniting as Hugo works on Markdown, not R-Markdown. In RStudio, it can be done if you go to `Edit the R Markdown format options for the current file` (that is the little cogwheel right of the knit button) -> `Output Options...` -> `Advanced` and check `Keep markdown source file`.
 
 Here is what the frontmatter of your `.Rmd` file should look like
 
@@ -84,8 +90,8 @@ output:
 
 ### Write a working `_index.Rmd` file
 
-  * Reading data. Save your `data` files directly in your working folder (*i.e.* folder where you have your `.Rmd` file). All your call to read data will be of the type `read.csv("mydata.csv")` (assuming you are using `.csv`). Since data files are used only when knitting and not shown on pages, they can be saved in a subfolder.
-  * Including images: Save them in your working folder and refer to them using either Markdown notation (`![](cute_image.jpg)`) or with a R code chunk as:
+  * **Reading data**: Save your `data` files directly in your working folder (*i.e.* folder where you have your `.Rmd` file). All your call to read data will be of the type `read.csv("mydata.csv")` (assuming you are using `.csv`). Since data files are used only when knitting and not shown on pages, they can be saved in a subfolder.
+  * **Including images**: Save them in your working folder and refer to them using either Markdown notation (`![](cute_image.jpg)`) or with a R code chunk as:
 
 ````md
 ```{r}
@@ -93,7 +99,7 @@ knitr::include_graphics("cute_image.jpg")
 ```
 ````
 
-  * Including R plots: You need to save plots generated by R somewhere that is accessible by `hugo` . The easiest place is simply your working folder, so include the following R chunk at the beginning of your file just below the frontmatter. It will generate the R plots and save them in your working directory.
+  * **Including R plots**: You need to save plots generated by R somewhere that is accessible by `hugo` . The easiest place is simply your working folder, so include the following R chunk at the beginning of your file just below the frontmatter. It will generate the R plots and save them in your working directory.
 
 ````md
 ```{r setup_fig, include=FALSE}
