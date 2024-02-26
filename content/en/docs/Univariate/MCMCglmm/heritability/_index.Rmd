@@ -10,8 +10,11 @@ output:
 ---
 
 
-```{r setup, include = FALSE}
-knitr::opts_chunk$set(fig.path = "plots/")
+```{r setup_fig, include=FALSE}
+knitr::opts_chunk$set(
+  fig.path = "",
+  cache = TRUE
+  )
 ```
 
 Here we show how to compute narrow-sense heritability from a simple linear animal model.
@@ -39,7 +42,7 @@ We re-run the model we used previously:
 set.seed(12345)
 ```
 
-```{r, cache=TRUE, message=FALSE, results='hide'}
+```{r model1.2, cache=TRUE, message=FALSE, results='hide'}
 model1.2 <- MCMCglmm(birth_weight ~ 1, #Response and Fixed effect formula
                    random = ~id, # Random effect formula
           ginverse = list(id = inverseAmatrix), # correlations among random effect levels (here breeding values)
@@ -61,7 +64,7 @@ h2_full_posterior <- model1.2$VCV[, "id"] / (model1.2$VCV[, "id"] + model1.2$VCV
 
 We can then look at the trace and distribution of heritability:
 
-```{r}
+```{r h2posterior}
 plot(h2_full_posterior)
 ```
 
