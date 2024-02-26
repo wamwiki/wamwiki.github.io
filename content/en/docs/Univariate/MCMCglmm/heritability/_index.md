@@ -12,6 +12,8 @@ output:
 
 
 
+> If you have missed the page to fit a simple univariate model in MCMCglmm, click [here](/docs/univariate/mcmcglmm/) (Yes, you were supposed to click on MCMCglmm in the menu on the left to get to the first page)
+
 Here we show how to compute narrow-sense heritability from a simple linear animal model.
 Narrow-sense heritability, or heritability for short, can be defined as the ratio of additive genetic variance over phenotypic variance. In our case, we have modelled only the mean, the additive genetic variance and the residual variance, so heritability  is:
 $ h^2 = V_A / V_P = V_A / (V_A + V_R)$.
