@@ -1,0 +1,87 @@
+---
+title: "Computing heritability"
+linkTitle: "Computing heritability"
+weight: 6
+description: >
+  Computing heritability.
+output: 
+  html_document: 
+    keep_md: yes
+---
+
+
+```{r setup_fig, include=FALSE}
+knitr::opts_chunk$set(
+  fig.path = "",
+  cache = TRUE
+  )
+```
+
+> If you have missed the page to fit a simple univariate model in MCMCglmm, click [here](/docs/univariate/mcmcglmm/) (Yes, you were supposed to click on MCMCglmm in the menu on the left to get to the first page)
+
+Here we show how to compute narrow-sense heritability from a simple linear animal model.
+Narrow-sense heritability, or heritability for short, can be defined as the ratio of additive genetic variance over phenotypic variance. In our case, we have modelled only the mean, the additive genetic variance and the residual variance, so heritability  is:
+$ h^2 = V_A / V_P = V_A / (V_A + V_R)$.
+
+We still use the gryphon dataset with `birth_weight` as the response, and MCMCglmm.
+
+```{r}
+phenotypicdata <- read.csv("data/gryphon.csv")
+pedigreedata <- read.csv("data/gryphonped.csv")
+```
+
+```{r, message=FALSE, results='hide'}
+library(MCMCglmm)
+```
+
+```{r, cache=TRUE}
+inverseAmatrix <- inverseA(pedigree = pedigreedata)$Ainv
+```
+
+We re-run the model we used previously:
+
+```{r, echo=FALSE}
+set.seed(12345)
+```
+
+```{r model1.2, cache=TRUE, message=FALSE, results='hide'}
+model1.2 <- MCMCglmm(birth_weight ~ 1, #Response and Fixed effect formula
+                   random = ~id, # Random effect formula
+          ginverse = list(id = inverseAmatrix), # correlations among random effect levels (here breeding values)
+          data = phenotypicdata, # data set
+          burnin = 10000, nitt = 30000, thin = 20) # run the model for longer compare to the default
+```
+
+```{r}
+summary(model1.2)
+```
+
+One could get a rough calculation of heritability using the values in the summary, but it is much better to apply (i.e., integrate) the calculation on the full posterior distribution. It is actually quite simple in MCMCglmm and in general an advantage of Bayesian approaches.
+
+We extract the vector of additive genetic variance posterior values (there are 1000 of them), stored in `$VCV[,"id"]` and the vector of residual variance posterior values (also 1000 of them), stored in `$VCV[,"units"]` and compute the 1000 posterior values of heritabilities as:
+
+```{r}
+h2_full_posterior <- model1.2$VCV[, "id"] / (model1.2$VCV[, "id"] + model1.2$VCV[, "units"])
+```
+
+We can then look at the trace and distribution of heritability:
+
+```{r h2posterior}
+plot(h2_full_posterior)
+```
+
+at point estimates:
+
+```{r}
+mean(h2_full_posterior)
+median(h2_full_posterior)
+posterior.mode(h2_full_posterior)
+```
+
+and at credible intervals:
+
+```{r}
+HPDinterval(h2_full_posterior) # default 95% interval
+
+HPDinterval(h2_full_posterior, prob = 0.98) # another arbitrary interval with 98% probability
+```
