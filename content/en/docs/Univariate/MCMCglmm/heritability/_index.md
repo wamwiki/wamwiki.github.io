@@ -21,18 +21,20 @@ $ h^2 = V_A / V_P = V_A / (V_A + V_R)$.
 We still use the gryphon dataset with `birth_weight` as the response, and MCMCglmm.
 
 
-```r
+
+
+``` r
 phenotypicdata <- read.csv("data/gryphon.csv")
 pedigreedata <- read.csv("data/gryphonped.csv")
 ```
 
 
-```r
+``` r
 library(MCMCglmm)
 ```
 
 
-```r
+``` r
 inverseAmatrix <- inverseA(pedigree = pedigreedata)$Ainv
 ```
 
@@ -41,16 +43,22 @@ We re-run the model we used previously:
 
 
 
-```r
+``` r
+prior1.2 <- list(
+  G = list(G1 = list(V = 1, nu = 0.002)),
+  R = list(V = 1, nu = 0.002)
+)
+
 model1.2 <- MCMCglmm(birth_weight ~ 1, #Response and Fixed effect formula
                    random = ~id, # Random effect formula
           ginverse = list(id = inverseAmatrix), # correlations among random effect levels (here breeding values)
           data = phenotypicdata, # data set
+          prior = prior1.2, # explicit prior for the random effect and residuals
           burnin = 10000, nitt = 30000, thin = 20) # run the model for longer compare to the default
 ```
 
 
-```r
+``` r
 summary(model1.2)
 ```
 
@@ -60,7 +68,7 @@ summary(model1.2)
 ##  Thinning interval  = 20
 ##  Sample size  = 1000 
 ## 
-##  DIC: 3912.137 
+##  DIC: 3912.138 
 ## 
 ##  G-structure:  ~id
 ## 
@@ -85,14 +93,14 @@ One could get a rough calculation of heritability using the values in the summar
 We extract the vector of additive genetic variance posterior values (there are 1000 of them), stored in `$VCV[,"id"]` and the vector of residual variance posterior values (also 1000 of them), stored in `$VCV[,"units"]` and compute the 1000 posterior values of heritabilities as:
 
 
-```r
+``` r
 h2_full_posterior <- model1.2$VCV[, "id"] / (model1.2$VCV[, "id"] + model1.2$VCV[, "units"])
 ```
 
 We can then look at the trace and distribution of heritability:
 
 
-```r
+``` r
 plot(h2_full_posterior)
 ```
 
@@ -101,52 +109,52 @@ plot(h2_full_posterior)
 at point estimates:
 
 
-```r
+``` r
 mean(h2_full_posterior)
 ```
 
 ```
-## [1] 0.4681129
+## [1] 0.4681105
 ```
 
-```r
+``` r
 median(h2_full_posterior)
 ```
 
 ```
-## [1] 0.4645503
+## [1] 0.4645474
 ```
 
-```r
+``` r
 posterior.mode(h2_full_posterior)
 ```
 
 ```
 ##      var1 
-## 0.4945104
+## 0.4945087
 ```
 
 and at credible intervals:
 
 
-```r
+``` r
 HPDinterval(h2_full_posterior) # default 95% interval
 ```
 
 ```
 ##          lower     upper
-## var1 0.3280573 0.6111057
+## var1 0.3280542 0.6111049
 ## attr(,"Probability")
 ## [1] 0.95
 ```
 
-```r
+``` r
 HPDinterval(h2_full_posterior, prob = 0.98) # another arbitrary interval with 98% probability
 ```
 
 ```
 ##          lower     upper
-## var1 0.3002681 0.6515323
+## var1 0.3002651 0.6515297
 ## attr(,"Probability")
 ## [1] 0.98
 ```

@@ -22,7 +22,12 @@ We will use the simulated gryphon dataset ([download zip file](/docs/data/grypho
 
 We need to load both the phenotypic data `gryphon.csv` and the pedigree `gryphonped.csv`.
 
-```{r}
+```{r, echo=FALSE}
+phenotypicdata <- read.csv("../data/gryphon.csv")
+pedigreedata <- read.csv("../data/gryphonped.csv")
+```
+
+```{r, eval=FALSE}
 phenotypicdata <- read.csv("data/gryphon.csv")
 pedigreedata <- read.csv("data/gryphonped.csv")
 ```
@@ -90,6 +95,8 @@ plot(model1.1, density=FALSE)
 
 Here the traces of the random effect variance `id` and of the residual variance are not bad but show an initial trend as well as some fluctuations. We are going to re-run the model for longer to avoid those problems before we look at the results.
 
+## Running the model longer
+
 We do that by increasing the `burnin` value from 3000 to 10000 (this is the number of samples we discard at the beginning of the chain to remove the influence of random starting parameter values), the `nitt` value from 13000 to 30000 (this is the total number of samples), and the `thin` value from 10 to 20 (this is the interval between samples that are saved in the model output; thinning is used to reduce the memory used by the model, much of which would be made of redundant if all samples were saved because of auto-correlation in MCMC.)
 
 ```{r, cache=TRUE, message=FALSE, results='hide'}
@@ -125,3 +132,38 @@ We can get the 95% credible interval of the additive genetic variance as
 ```{r}
 HPDinterval(model1.2$VCV[, "id"])
 ```
+
+## Setting the prior explicitly
+
+Bayesian models need what we call *priors*. A prior is the probability distribution of parameter values before looking at the data.
+So far we have not worried about it and used the implicit default MCMCglmm prior, but the default prior can cause problems. It is a good habit to specify the prior explicitly and check the results are stable under different priors.
+
+Priors are specified as lists and can contain up to four elements in MCMCglmm: 
+* B for the fixed effects 
+* G for the random effects
+* R for the residuals
+* S for the scale parameters in some model families
+
+Most of the time we will not specify B and S, which means that we keep the implicit defaults. 
+
+Each prior element is itself a list, or nested list, of parameter values. We will explain more what they mean later, but for now, here is a common prior for the model structure we have fitted above:
+
+```{r}
+prior1.2 <- list(
+  G = list(G1 = list(V = 1, nu = 0.002)),
+  R = list(V = 1, nu = 0.002)
+)
+```
+
+The prior is then added as an argument:
+
+```{r, cache=TRUE, message=FALSE, results='hide'}
+model1.2.p <- MCMCglmm(birth_weight ~ 1,
+                   random = ~id,
+          ginverse = list(id = inverseAmatrix), 
+          data = phenotypicdata, 
+          prior = prior1.2, # here is the prior
+          burnin = 10000, nitt = 30000, thin = 20) 
+```
+
+Here the results are almost identical to those obtained with the default prior.

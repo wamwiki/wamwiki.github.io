@@ -18,7 +18,9 @@ We will use the simulated gryphon dataset ([download zip file](/docs/data/grypho
 We need to load both the phenotypic data `gryphon.csv` and the pedigree `gryphonped.csv`.
 
 
-```r
+
+
+``` r
 phenotypicdata <- read.csv("data/gryphon.csv")
 pedigreedata <- read.csv("data/gryphonped.csv")
 ```
@@ -26,7 +28,7 @@ pedigreedata <- read.csv("data/gryphonped.csv")
 The phenotypic data look like this:
 
 
-```r
+``` r
 head(phenotypicdata)
 ```
 
@@ -45,7 +47,7 @@ We will use `birth_weight` as a response variable.
 And the pedigree looks like this:
 
 
-```r
+``` r
 head(pedigreedata)
 ```
 
@@ -59,7 +61,7 @@ head(pedigreedata)
 ## 6 1288     NA     NA
 ```
 
-```r
+``` r
 tail(pedigreedata)
 ```
 
@@ -81,14 +83,14 @@ Here is the simplest implementation of an animal model in MCMCglmm.
 First, we load the package:
 
 
-```r
+``` r
 library(MCMCglmm)
 ```
 
 Second, while not strictly necessary we think it is a good practice to convert the pedigree to an inverse-relatedness matrix. If the pedigree is properly formatted this is easily done with `MCMCglmm::inverseA`. The other option is to pass the pedigree directly in the `pedigree` argument of the function `MCMCglmm`, but that solution is less flexible.
 
 
-```r
+``` r
 inverseAmatrix <- inverseA(pedigree = pedigreedata)$Ainv
 ```
 
@@ -102,7 +104,7 @@ Now we can fit the model of `birth_weight` to estimate three parameters:
 
 
 
-```r
+``` r
 model1.1 <- MCMCglmm(birth_weight ~ 1, #Response and Fixed effect formula
                    random = ~id, # Random effect formula
           ginverse = list(id = inverseAmatrix), # correlations among random effect levels (here breeding values)
@@ -116,7 +118,7 @@ Let's look at the results.
 It is always a good idea to look at the trace of the MCMC sampling. Ideally we want to see "hairy caterpillars" for each parameter, that is, a stationary distribution without long-term or short-term trends across iterations. This lack of trend would indicate that the model may have converged and may have explored properly the multivariate parameter space, thus giving us reliable parameter estimates.
 
 
-```r
+``` r
 plot(model1.1, density=FALSE)
 ```
 
@@ -125,10 +127,12 @@ plot(model1.1, density=FALSE)
 
 Here the traces of the random effect variance `id` and of the residual variance are not bad but show an initial trend as well as some fluctuations. We are going to re-run the model for longer to avoid those problems before we look at the results.
 
+## Running the model longer
+
 We do that by increasing the `burnin` value from 3000 to 10000 (this is the number of samples we discard at the beginning of the chain to remove the influence of random starting parameter values), the `nitt` value from 13000 to 30000 (this is the total number of samples), and the `thin` value from 10 to 20 (this is the interval between samples that are saved in the model output; thinning is used to reduce the memory used by the model, much of which would be made of redundant if all samples were saved because of auto-correlation in MCMC.)
 
 
-```r
+``` r
 model1.2 <- MCMCglmm(birth_weight ~ 1, #Response and Fixed effect formula
                    random = ~id, # Random effect formula
           ginverse = list(id = inverseAmatrix), # correlations among random effect levels (here breeding values)
@@ -137,7 +141,7 @@ model1.2 <- MCMCglmm(birth_weight ~ 1, #Response and Fixed effect formula
 ```
 
 
-```r
+``` r
 plot(model1.2, density=FALSE)
 ```
 
@@ -146,7 +150,7 @@ plot(model1.2, density=FALSE)
 Much better. Now we can look at the model summary.
 
 
-```r
+``` r
 summary(model1.2)
 ```
 
@@ -181,7 +185,7 @@ Among other things, the summary gives the posterior mean and 95% credible interv
 The posterior mean is often not a great point estimate for variance parameters, because of the skew in their posterior distribution. We can  obtain the posterior mode or posterior median of the additive genetic variance as
 
 
-```r
+``` r
 posterior.mode(model1.2$VCV[, "id"])
 ```
 
@@ -190,7 +194,7 @@ posterior.mode(model1.2$VCV[, "id"])
 ## 3.252129
 ```
 
-```r
+``` r
 median(model1.2$VCV[, "id"])
 ```
 
@@ -201,7 +205,7 @@ median(model1.2$VCV[, "id"])
 We can get the 95% credible interval of the additive genetic variance as
 
 
-```r
+``` r
 HPDinterval(model1.2$VCV[, "id"])
 ```
 
@@ -211,3 +215,40 @@ HPDinterval(model1.2$VCV[, "id"])
 ## attr(,"Probability")
 ## [1] 0.95
 ```
+
+## Setting the prior explicitly
+
+Bayesian models need what we call *priors*. A prior is the probability distribution of parameter values before looking at the data.
+So far we have not worried about it and used the implicit default MCMCglmm prior, but the default prior can cause problems. It is a good habit to specify the prior explicitly and check the results are stable under different priors.
+
+Priors are specified as lists and can contain up to four elements in MCMCglmm: 
+* B for the fixed effects 
+* G for the random effects
+* R for the residuals
+* S for the scale parameters in some model families
+
+Most of the time we will not specify B and S, which means that we keep the implicit defaults. 
+
+Each prior element is itself a list, or nested list, of parameter values. We will explain more what they mean later, but for now, here is a common prior for the model structure we have fitted above:
+
+
+``` r
+prior1.2 <- list(
+  G = list(G1 = list(V = 1, nu = 0.002)),
+  R = list(V = 1, nu = 0.002)
+)
+```
+
+The prior is then added as an argument:
+
+
+``` r
+model1.2.p <- MCMCglmm(birth_weight ~ 1,
+                   random = ~id,
+          ginverse = list(id = inverseAmatrix), 
+          data = phenotypicdata, 
+          prior = prior1.2, # here is the prior
+          burnin = 10000, nitt = 30000, thin = 20) 
+```
+
+Here the results are almost identical to those obtained with the default prior.

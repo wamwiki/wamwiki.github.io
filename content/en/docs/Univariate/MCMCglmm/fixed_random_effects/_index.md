@@ -17,32 +17,40 @@ Here we will see how to add fixed effects and random effects to our linear anima
 We still use the gryphon dataset with `birth_weight` as the response, and MCMCglmm.
 
 
-```r
+
+
+``` r
 phenotypicdata <- read.csv("data/gryphon.csv")
 pedigreedata <- read.csv("data/gryphonped.csv")
 ```
 
 
-```r
+``` r
 library(MCMCglmm)
 ```
 
 
-```r
+``` r
 inverseAmatrix <- inverseA(pedigree = pedigreedata)$Ainv
 ```
 
 
-Previously we run the simple model `model1.2` (not run again here):
+Previously we run the simple model `model1.2` (no need to run it again here):
 
 
 
 
-```r
+``` r
+prior1.2 <- list(
+  G = list(G1 = list(V = 1, nu = 0.002)),
+  R = list(V = 1, nu = 0.002)
+)
+
 model1.2 <- MCMCglmm(birth_weight ~ 1, #Response and Fixed effect formula
                    random = ~id, # Random effect formula
           ginverse = list(id = inverseAmatrix), # correlations among random effect levels
           data = phenotypicdata, # data set
+          prior = prior1.2, # explicit prior for the random effect and residuals
           burnin = 10000, nitt = 30000, thin = 20) # run the model for longer compare to the default
 ```
 
@@ -53,7 +61,7 @@ We will start by adding sex as a fixed effect. Why? Because sexes appear to be q
 We can check that sexes are quite different in birth weight visually:
 
 
-```r
+``` r
 library(ggplot2)
 ggplot(phenotypicdata, aes(x=as.factor(sex), y=birth_weight)) + geom_boxplot()
 ```
@@ -68,23 +76,24 @@ ggplot(phenotypicdata, aes(x=as.factor(sex), y=birth_weight)) + geom_boxplot()
 Sex is coded with values 1 and 2. It can be simpler to read model outputs if sex is coded with values 0 and 1, or with explicit labels. We will use `"M"` and `"F"` and store the new encoding as the column `sexMF`:
 
 
-```r
+``` r
 phenotypicdata$sexMF <- ifelse(phenotypicdata$sex==1, "M", "F")
 ```
 
 To add `sexMF` as a fixed effect to the model we add the column name in the line which contains the response variable, on the right-hand side of the tilde (`~`). Different fixed effects can be added using `+` signs. The `1` that was already there stands for the intercept. 
 
 
-```r
+``` r
 model1.3 <- MCMCglmm(birth_weight ~ 1 + sexMF, #Response and Fixed effect formula
                    random = ~id,
           ginverse = list(id = inverseAmatrix), 
           data = phenotypicdata,
+          prior = prior1.2, # we can keep the same prior
           burnin = 10000, nitt = 30000, thin = 20) 
 ```
 
 
-```r
+``` r
 summary(model1.3)
 ```
 
@@ -121,7 +130,7 @@ Fixed effects are stored in the `$Sol` element of MCMCglmm models.
 We can visualise the trace and posterior distribution of the difference:
 
 
-```r
+``` r
 plot(model1.3$Sol[,"sexMFM"])
 ```
 
@@ -130,7 +139,7 @@ plot(model1.3$Sol[,"sexMFM"])
 And we can compute the usual summary of the posterior distribution of the sex difference:
 
 
-```r
+``` r
 median(model1.3$Sol[,"sexMFM"])
 ```
 
@@ -138,7 +147,7 @@ median(model1.3$Sol[,"sexMFM"])
 ## [1] -2.219992
 ```
 
-```r
+``` r
 posterior.mode(model1.3$Sol[,"sexMFM"])
 ```
 
@@ -147,13 +156,13 @@ posterior.mode(model1.3$Sol[,"sexMFM"])
 ## -2.242623
 ```
 
-```r
+``` r
 HPDinterval(model1.3$Sol[,"sexMFM"])
 ```
 
 ```
 ##          lower     upper
-## var1 -2.507572 -1.891486
+## var1 -2.507571 -1.891487
 ## attr(,"Probability")
 ## [1] 0.95
 ```
@@ -164,7 +173,7 @@ We can also calculate posterior probabilities that are analogue to p-values usin
 Thus, the posterior probability that the difference is not negative is:
 
 
-```r
+``` r
 mean( model1.3$Sol[,"sexMFM"] >= 0 )
 ```
 
@@ -175,7 +184,7 @@ mean( model1.3$Sol[,"sexMFM"] >= 0 )
 We will generally want to double that value to make it analogue to a two-sided p-value:
 
 
-```r
+``` r
 2 * mean( model1.3$Sol[,"sexMFM"] >= 0 )
 ```
 
@@ -188,7 +197,7 @@ Here there are no samples above zero, so twice the posterior probability is esti
 Note that you can compute posterior probabilities testing the parameter estimate against arbitrary values. For instance, the  $p_{MCMC}$ that the sex difference is above $-2$ is:
 
 
-```r
+``` r
 2 * mean( model1.3$Sol[,"sexMFM"] >= -2 )
 ```
 
@@ -199,7 +208,7 @@ Note that you can compute posterior probabilities testing the parameter estimate
 and the $p_{MCMC}$ that the sex difference is below $-2.5$ is:
 
 
-```r
+``` r
 2 * mean( model1.3$Sol[,"sexMFM"] <= -2.5 )
 ```
 
@@ -214,7 +223,7 @@ There are not many variables to experiment with in this dataset, but let's say w
 Let's just re-scale cohort to avoid changing the intercept and perhaps to help a bit the estimation algorithm (it is often easier to have fixed effects on similar scales) and interpretation (it may be easier to see what is a big or small effect when fixed effects are standardized, although it is by no mean necessary).
 
 
-```r
+``` r
 model1.4 <- MCMCglmm(birth_weight ~ 1 + sexMF + scale(cohort), #Response and Fixed effect formula
                    random = ~id, 
           ginverse = list(id = inverseAmatrix),
@@ -224,7 +233,7 @@ model1.4 <- MCMCglmm(birth_weight ~ 1 + sexMF + scale(cohort), #Response and Fix
 
 
 
-```r
+``` r
 summary(model1.4)
 ```
 
@@ -259,7 +268,7 @@ summary(model1.4)
 As previously we can plot the trace and posterior distribution of the effect of cohort, compute its posterior mean, median, mode, credible interval, and $p_{MCMC}$
 
 
-```r
+``` r
 plot(model1.4$Sol[,"scale(cohort)"])
 ```
 
@@ -267,7 +276,7 @@ plot(model1.4$Sol[,"scale(cohort)"])
 
 
 
-```r
+``` r
 mean(model1.4$Sol[,"scale(cohort)"])
 ```
 
@@ -275,7 +284,7 @@ mean(model1.4$Sol[,"scale(cohort)"])
 ## [1] -0.1802587
 ```
 
-```r
+``` r
 median(model1.4$Sol[,"scale(cohort)"])
 ```
 
@@ -283,7 +292,7 @@ median(model1.4$Sol[,"scale(cohort)"])
 ## [1] -0.1803727
 ```
 
-```r
+``` r
 posterior.mode(model1.4$Sol[,"scale(cohort)"])
 ```
 
@@ -292,7 +301,7 @@ posterior.mode(model1.4$Sol[,"scale(cohort)"])
 ## -0.1720475
 ```
 
-```r
+``` r
 HPDinterval(model1.4$Sol[,"scale(cohort)"])
 ```
 
@@ -303,7 +312,7 @@ HPDinterval(model1.4$Sol[,"scale(cohort)"])
 ## [1] 0.95
 ```
 
-```r
+``` r
 2*mean(model1.4$Sol[,"scale(cohort)"]>0)
 ```
 
@@ -320,17 +329,30 @@ For instance, it is very common to include the mother identity as a random effec
 
 To include mother as a random effect we write the variable name in the argument `random`, after `ìd +`. We do not need to change the argument `ginverse` if we assume that the levels of the additional random effect are uncorrelated (this is often not strictly true, and it can be interesting to model the genetic correlations between maternal levels, but this is a more advanced topic.)
 
+We also need to adjust the prior. As we now have two random effects, the `G` elements will contain two identical elements, one for the `id` random effect, one for the `mother` random effect:
 
-```r
+
+``` r
+prior1.5 <- list(
+  G = list(G1 = list(V = 1, nu = 0.002),
+           G2 = list(V = 1, nu = 0.002)),
+  R = list(V = 1, nu = 0.002)
+)
+```
+
+
+
+``` r
 model1.5 <- MCMCglmm(birth_weight ~ 1 + sexMF + scale(cohort), 
                    random = ~id + mother, # Random effect formula
           ginverse = list(id = inverseAmatrix),
           data = phenotypicdata, 
+          prior = prior1.5,
           burnin = 10000, nitt = 30000, thin = 20) 
 ```
 
 
-```r
+``` r
 summary(model1.5)
 ```
 
@@ -350,7 +372,7 @@ summary(model1.5)
 ##                ~mother
 ## 
 ##        post.mean l-95% CI u-95% CI eff.samp
-## mother     1.071   0.5586    1.589    563.9
+## mother     1.071   0.5586    1.589      564
 ## 
 ##  R-structure:  ~units
 ## 
@@ -360,9 +382,9 @@ summary(model1.5)
 ##  Location effects: birth_weight ~ 1 + sexMF + scale(cohort) 
 ## 
 ##               post.mean  l-95% CI  u-95% CI eff.samp  pMCMC    
-## (Intercept)    8.319287  8.034262  8.582700     1000 <0.001 ***
-## sexMFM        -2.233155 -2.542082 -1.917310     1000 <0.001 ***
-## scale(cohort) -0.181168 -0.375359 -0.004372     1000   0.05 *  
+## (Intercept)    8.319287  8.034260  8.582700     1000 <0.001 ***
+## sexMFM        -2.233155 -2.542081 -1.917310     1000 <0.001 ***
+## scale(cohort) -0.181168 -0.375359 -0.004373     1000   0.05 *  
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```
@@ -372,7 +394,7 @@ Posterior distributions of random effect variance parameters are stored in the `
 We can visualise the trace and posterior distribution of the variance associated with mother identity as:
 
 
-```r
+``` r
 plot(model1.5$VCV[,"mother"])
 ```
 
@@ -381,38 +403,38 @@ plot(model1.5$VCV[,"mother"])
 And we can compute summaries of the posterior distribution:
 
 
-```r
+``` r
 mean(model1.5$VCV[,"mother"])
 ```
 
 ```
-## [1] 1.071025
+## [1] 1.071036
 ```
 
-```r
+``` r
 median(model1.5$VCV[,"mother"])
 ```
 
 ```
-## [1] 1.059679
+## [1] 1.059683
 ```
 
-```r
+``` r
 posterior.mode(model1.5$VCV[,"mother"])
 ```
 
 ```
-##     var1 
-## 0.981803
+##      var1 
+## 0.9818395
 ```
 
-```r
+``` r
 HPDinterval(model1.5$VCV[,"mother"])
 ```
 
 ```
 ##          lower    upper
-## var1 0.5586244 1.589435
+## var1 0.5586413 1.589433
 ## attr(,"Probability")
 ## [1] 0.95
 ```
@@ -421,7 +443,7 @@ Note that it is not really meaningful to compute $p_MCMC$ to test a variance in 
 It is possible to compute $p_MCMC$ for other values though, for instance, we can estimate the probability that the variance associated with mother identity is greater than 1.5:
 
 
-```r
+``` r
 2*mean(model1.5$VCV[,"mother"] >= 1.5 )
 ```
 
@@ -432,7 +454,7 @@ It is possible to compute $p_MCMC$ for other values though, for instance, we can
 or we can estimate if the variance associated with mother identity is less than the additive genetic variance:
 
 
-```r
+``` r
 2*mean(model1.5$VCV[,"mother"] > model1.5$VCV[,"id"] )
 ```
 
@@ -447,11 +469,19 @@ We can add a third random effect, for instance cohort (yes, we can include cohor
 
 
 
-```r
+``` r
+prior1.6 <- list(
+  G = list(G1 = list(V = 1, nu = 0.002),
+           G2 = list(V = 1, nu = 0.002),
+           G3 = list(V = 1, nu = 0.002)),
+  R = list(V = 1, nu = 0.002)
+)
+
 model1.6 <- MCMCglmm(birth_weight ~ 1 + sexMF + scale(cohort), 
                    random = ~id + mother + cohort, # Random effect formula
           ginverse = list(id = inverseAmatrix),
           data = phenotypicdata, 
+          prior = prior1.6,
           burnin = 10000, nitt = 30000, thin = 20) 
 ```
 
@@ -462,26 +492,26 @@ model1.6 <- MCMCglmm(birth_weight ~ 1 + sexMF + scale(cohort),
 We could compute heritability as the ratio of additive genetic variance over the sum of random effect and residual variance. In the case of model1.6 that would be $h^2 = V_A / (V_A + V_M + V_C + V_R) $
 
 
-```r
+``` r
 h2_nofixef <- model1.6$VCV[,"id"] / (model1.6$VCV[,"id"] + model1.6$VCV[,"mother"] + model1.6$VCV[,"cohort"] + model1.6$VCV[,"units"])
 ```
 
 
-```r
+``` r
 median(h2_nofixef)
 ```
 
 ```
-## [1] 0.386974
+## [1] 0.3869701
 ```
 
-```r
+``` r
 HPDinterval(h2_nofixef)
 ```
 
 ```
 ##          lower     upper
-## var1 0.2455021 0.5369925
+## var1 0.2454993 0.5369853
 ## attr(,"Probability")
 ## [1] 0.95
 ```
@@ -499,14 +529,14 @@ Those predictions can be computed as the matrix product of predictors by paramet
 In MCMCglmm it can be done like this:
 
 
-```r
+``` r
 predictions1.6 <- model1.6$X %*% t(model1.6$Sol)
 ```
 
 This object contains one row for each data point and one column for each posterior sample.
 
 
-```r
+``` r
 dim(predictions1.6)
 ```
 
@@ -517,24 +547,24 @@ dim(predictions1.6)
 For each posterior sample we can compute the variance:
 
 
-```r
+``` r
 fixef_variance <- apply(predictions1.6, MARGIN = 2, var)
 ```
 
 We can then plug it in the calculation of heritability:
 
 
-```r
+``` r
 h2_fixef <- model1.6$VCV[,"id"] / (model1.6$VCV[,"id"] + model1.6$VCV[,"mother"] + model1.6$VCV[,"cohort"] + model1.6$VCV[,"units"] + fixef_variance)
 ```
 
 
-```r
+``` r
 median(h2_fixef)
 ```
 
 ```
-## [1] 0.3300817
+## [1] 0.330079
 ```
 
 
