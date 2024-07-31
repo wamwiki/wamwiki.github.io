@@ -1,0 +1,274 @@
+---
+title: "Setting priors, more details"
+linkTitle: "More details on priors"
+weight: 8
+description: >
+  Setting priors in details.
+output: 
+  html_document: 
+    keep_md: yes
+---
+
+
+```{r setup_fig, include=FALSE}
+knitr::opts_chunk$set(
+  fig.path = "",
+  cache = TRUE
+  )
+```
+
+We still use the gryphon dataset with `birth_weight` as the response, and MCMCglmm.
+
+```{r loaddatahidden, echo=FALSE}
+phenotypicdata <- read.csv("../../data/gryphon.csv")
+pedigreedata <- read.csv("../../data/gryphonped.csv")
+```
+
+```{r loaddatadummy, eval=FALSE}
+phenotypicdata <- read.csv("data/gryphon.csv")
+pedigreedata <- read.csv("data/gryphonped.csv")
+```
+
+This time we load the tidyverse for data wrangling and plotting
+
+```{r loadpackages, message=FALSE, results='hide'}
+library(MCMCglmm)
+library(tidyverse)
+```
+
+```{r processdata, cache=TRUE}
+phenotypicdata$sexMF <- ifelse(phenotypicdata$sex==1, "M", "F")
+inverseAmatrix <- inverseA(pedigree = pedigreedata)$Ainv
+```
+
+```{r setseed, echo=FALSE}
+set.seed(12345)
+```
+
+# Visualising a variance prior
+
+Here is a function to compute the density of a variance prior as defined in MCMCglmm:
+
+```{r definedprior}
+dprior <- function(v, V=1, nu=0.002, alpha.V=1, alpha.mu=0){
+  if(alpha.V==1){
+    d <- df(v/alpha.V, df1 = 1, df2 = nu, ncp = (alpha.mu^2)/alpha.V)
+  }else{
+    d <- dinvgamma(v, shape = nu/2, scale = nu * V / 2)
+  }
+  return(d)
+}
+```
+
+Let's visualise the distribution from the minimum (0, as a variance is positive) to an arbitrary value (here, 5):
+
+```{r priorviz}
+v <- seq(0, 5, by=0.01)
+plot(dprior(v))
+```
+
+The density is infinite for `v=0` so the graph will look a bit different depending on how close to `0` the second value is (here `0.01`), but that will not matter when we compare the distribution to other distributions.
+
+Let's look at the prior vs. the posterior distributions of the various variance components from one of our previous models
+
+```{r model1.6, message=FALSE, results='hide'}
+prior1.6 <- list(
+  G = list(G1 = list(V = 1, nu = 0.002),
+           G2 = list(V = 1, nu = 0.002),
+           G3 = list(V = 1, nu = 0.002)),
+  R = list(V = 1, nu = 0.002)
+)
+
+model1.6 <- MCMCglmm(birth_weight ~ 1 + sexMF + scale(cohort), 
+                   random = ~id + mother + cohort, # Random effect formula
+          ginverse = list(id = inverseAmatrix),
+          data = phenotypicdata, 
+          prior = prior1.6,
+          burnin = 10000, nitt = 30000, thin = 20) 
+```
+
+The variance components are stored in `model1.6$VCV`, we just need to reformat them a little
+
+```{r priorposteriorcomp.model1.6}
+posterior_model1.6 <- model1.6$VCV %>% 
+  as_tibble() %>%
+  pivot_longer(cols = 1:ncol(model1.6$VCV), names_to = "component")
+
+prior_model1.6 <- tibble(value=seq(0, 5, by=0.01), 
+                         density=dprior(value, V = 1, nu = 0.002), component="prior")
+
+ggplot(posterior_model1.6, mapping = aes(x=value, color=component)) + 
+  geom_density() + 
+  geom_line(data=prior_model1.6, aes(x=value, y=density)) +
+  theme_bw()
+```
+
+So the prior is very dense close to `0` and then very flat and not dense for the range of estimated parameter values.
+
+
+# Different random effect priors
+
+We can always specify a prior so strong that it will override the signal in the data and influence the posterior distribution, but we do not want that.
+
+Therefore it is a good idea to check that the posterior distribution is not too influenced by the choice of a prior. 
+
+For instance, if we had set one of the `nu` parameters to 20, corresponding to a "high degree of belief", the estimation of the additive genetic variance ($V_A$, correspondong to the `id` random effect in our model) would have been subtly but significantly influenced by the prior:
+
+```{r model1.7, message=FALSE, results='hide'}
+prior1.7 <- list(
+  G = list(G1 = list(V = 1, nu = 20),
+           G2 = list(V = 1, nu = 0.002),
+           G3 = list(V = 1, nu = 0.002)),
+  R = list(V = 1, nu = 0.002)
+)
+
+model1.7 <- MCMCglmm(birth_weight ~ 1 + sexMF + scale(cohort), 
+                   random = ~id + mother + cohort, # Random effect formula
+          ginverse = list(id = inverseAmatrix),
+          data = phenotypicdata, 
+          prior = prior1.7,
+          burnin = 10000, nitt = 30000, thin = 20) 
+```
+
+We can see the prior has areas of relatively high density overlapping with the posterior distribution of $V_A$.
+
+```{r priorposteriorcomp.model1.7}
+posterior_model1.7 <- model1.7$VCV %>% 
+  as_tibble() %>%
+  pivot_longer(cols = 1:ncol(model1.7$VCV), names_to = "component")
+
+prior_model1.7 <- tibble(value=seq(0.01, 5, by=0.01),
+                         density=dprior(value, V = 1, nu = 20), component="prior")
+
+ggplot(posterior_model1.7, mapping = aes(x=value, color=component)) + 
+  geom_density() + 
+  geom_line(data=prior_model1.7, aes(x=value, y=density)) +
+  theme_bw()
+```
+
+Here are the two posterior distributions from the models with weak and strong priors:
+
+```{r va_differentpriors1.6_1.7}
+comparison_posteriors_1.6_1.7 <- bind_rows(posterior_model1.6 %>% filter(component=="id") %>% mutate(model="with weak prior"),
+                                  posterior_model1.7 %>% filter(component=="id") %>% mutate(model="with strong prior"))
+  
+ggplot(comparison_posteriors_1.6_1.7, mapping = aes(x=value, color=model)) + 
+  geom_density() +
+  theme_bw()
+```
+
+```{r}
+HPDinterval(model1.6$VCV[,"id"])
+HPDinterval(model1.7$VCV[,"id"])
+```
+
+We can also try to lower the `nu` value to something much smaller:
+
+```{r model1.8, message=FALSE, results='hide'}
+prior1.8 <- list(
+  G = list(G1 = list(V = 1, nu = 0.000002),
+           G2 = list(V = 1, nu = 0.002),
+           G3 = list(V = 1, nu = 0.002)),
+  R = list(V = 1, nu = 0.002)
+)
+
+model1.8 <- MCMCglmm(birth_weight ~ 1 + sexMF + scale(cohort), 
+                   random = ~id + mother + cohort, # Random effect formula
+          ginverse = list(id = inverseAmatrix),
+          data = phenotypicdata, 
+          prior = prior1.8,
+          burnin = 10000, nitt = 30000, thin = 20) 
+
+posterior_model1.8 <- model1.8$VCV %>% 
+  as_tibble() %>%
+  pivot_longer(cols = 1:ncol(model1.8$VCV), names_to = "component")
+```
+
+We can also specify an "improper prior" using the value of `nu=-1`. This prior is noninformative with regard to the marginal distribution of a variance, and so it is a good benchmark to check the prior does not influence the posterior much. However, we do not use it commonly as it can cause estimation and interpretation issues.
+
+```{r model1.9, message=FALSE, results='hide'}
+prior1.9 <- list(
+  G = list(G1 = list(V = 1, nu = -1),
+           G2 = list(V = 1, nu = 0.002),
+           G3 = list(V = 1, nu = 0.002)),
+  R = list(V = 1, nu = 0.002)
+)
+
+model1.9 <- MCMCglmm(birth_weight ~ 1 + sexMF + scale(cohort), 
+                   random = ~id + mother + cohort, # Random effect formula
+          ginverse = list(id = inverseAmatrix),
+          data = phenotypicdata, 
+          prior = prior1.9,
+          burnin = 10000, nitt = 30000, thin = 20) 
+
+posterior_model1.9 <- model1.9$VCV %>% 
+  as_tibble() %>%
+  pivot_longer(cols = 1:ncol(model1.9$VCV), names_to = "component")
+```
+
+
+
+
+```{r va_differentpriors1.6_1.8}
+comparison_posteriors_all <- bind_rows(posterior_model1.6 %>% filter(component=="id") %>% mutate(model="with standard prior"),
+                                  posterior_model1.7 %>% filter(component=="id") %>% mutate(model="with very strong prior"),
+                                  posterior_model1.8 %>% filter(component=="id") %>% mutate(model="with very weak prior"),
+                                  posterior_model1.9 %>% filter(component=="id") %>% mutate(model="with improper prior"))
+  
+
+
+ggplot(comparison_posteriors_all, mapping = aes(x=value, color=model)) + 
+  geom_density() +
+  geom_vline(data=comparison_posteriors_all %>% group_by(model) %>% summarise(median=median(value)),
+             aes(xintercept = median, color=model), linetype = "dashed")
+  theme_bw()
+```
+
+The very strong prior is problematic, the three other ones seem in agreement (in particular the posterior medians are very close and the distributions mostly overlap).
+
+## Parameter expanded prior
+
+A last class of variance prior that is useful to know are **parameter expanded priors**. They are particularly useful for variance parameters close to zero.
+ 
+```{r}
+
+```
+
+
+
+# Fixed effect prior
+
+
+```{r model1.7, message=FALSE, results='hide'}
+prior1.7 <- list(
+  G = list(G1 = list(V = 1, nu = 1, alpha.V=1000),
+           G2 = list(V = 1, nu = 1, alpha.V=1000),
+           G3 = list(V = 1, nu = 1, alpha.V=1000)),
+  R = list(V = 1, nu = 0.002)
+)
+
+model1.7 <- MCMCglmm(birth_weight ~ 1 + sexMF + scale(cohort), 
+                   random = ~id + mother + cohort, # Random effect formula
+          ginverse = list(id = inverseAmatrix),
+          data = phenotypicdata, 
+          prior = prior1.7,
+          burnin = 10000, nitt = 30000, thin = 20) 
+```
+
+
+```{r}
+summary(model1.6)
+summary(model1.7)
+```
+
+
+# Multivariate variance-covariance prior
+
+```{r}
+mv_iw_prior <- function(v,V,nu,variable=1){
+  if(!is.matrix(V)){V <- as.matrix(V)}
+  nu.ast <- nu - dim(V)[1] + 1
+  V.ast <- V[variable,variable] * (nu/nu.ast) 
+  return(MCMCpack::dinvgamma(v, shape = nu.ast/2, scale = (nu.ast * V.ast)/2))
+}
+```
