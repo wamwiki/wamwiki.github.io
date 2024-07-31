@@ -29,7 +29,7 @@ phenotypicdata <- read.csv("data/gryphon.csv")
 pedigreedata <- read.csv("data/gryphonped.csv")
 ```
 
-This time we load the tidyverse for data wrangling and plotting
+This time we load the tidyverse for data wrangling and plotting, and MCMCpack for prior visualisation
 
 ```{r loadpackages, message=FALSE, results='hide'}
 library(MCMCglmm)
@@ -51,8 +51,9 @@ Here is a function to compute the density of a variance prior as defined in MCMC
 
 ```{r definedprior}
 dprior <- function(v, V=1, nu=0.002, alpha.V=1, alpha.mu=0){
-  if(alpha.V==1){
-    d <- df(v/alpha.V, df1 = 1, df2 = nu, ncp = (alpha.mu^2)/alpha.V)
+  require(MCMCpack)
+  if(alpha.V!=1 | alpha.mu!=0){
+    d <- df(v, df1 = 1, df2 = nu, ncp = (alpha.mu^2)/alpha.V) # TO BE CONFIRMED, IS IT THE CORRECT CODE FOR PARAMETER EXPANDED PRIOR ?
   }else{
     d <- dinvgamma(v, shape = nu/2, scale = nu * V / 2)
   }
@@ -94,7 +95,7 @@ posterior_model1.6 <- model1.6$VCV %>%
   as_tibble() %>%
   pivot_longer(cols = 1:ncol(model1.6$VCV), names_to = "component")
 
-prior_model1.6 <- tibble(value=seq(0, 5, by=0.01), 
+prior_model1.6 <- tibble(value=seq(0.001, 5, by=0.01), 
                          density=dprior(value, V = 1, nu = 0.002), component="prior")
 
 ggplot(posterior_model1.6, mapping = aes(x=value, color=component)) + 
@@ -137,7 +138,7 @@ posterior_model1.7 <- model1.7$VCV %>%
   as_tibble() %>%
   pivot_longer(cols = 1:ncol(model1.7$VCV), names_to = "component")
 
-prior_model1.7 <- tibble(value=seq(0.01, 5, by=0.01),
+prior_model1.7 <- tibble(value=seq(0.001, 5, by=0.01),
                          density=dprior(value, V = 1, nu = 20), component="prior")
 
 ggplot(posterior_model1.7, mapping = aes(x=value, color=component)) + 
@@ -230,16 +231,88 @@ The very strong prior is problematic, the three other ones seem in agreement (in
 
 A last class of variance prior that is useful to know are **parameter expanded priors**. They are particularly useful for variance parameters close to zero.
  
+To illustrate this, we add the `father` information to the dataset:
+ 
 ```{r}
-
+phenotypicdata <- merge(phenotypicdata, pedigreedata)
 ```
 
+Fathers were ignored when simulating the data, so we do not expect any variance to be explained by father identity.
+
+```{r}
+prior2.0 <- list(
+  G = list(G1 = list(V = 1, nu = 0.002),
+           G2 = list(V = 1, nu = 0.002),
+           G3 = list(V = 1, nu = 0.002),
+           G4 = list(V = 1, nu = 0.002)),
+  R = list(V = 1, nu = 0.002)
+)
+
+model2 <- MCMCglmm(birth_weight ~ 1 + sexMF + scale(cohort), 
+                   random = ~id + mother + cohort + father,
+          ginverse = list(id = inverseAmatrix),
+          data = phenotypicdata, 
+          prior = prior2.0,
+          burnin = 10000, nitt = 30000, thin = 20) 
+```
+
+The model suggests low variance, but the chain mixes poorly:
+
+```{r}
+plot(model2$VCV[,4])
+```
+
+We change all the G element to parameter expanded priors:
+
+```{r}
+prior2.1 <- list(
+  G = list(G1 = list(V = 1, nu = 1, alpha.V=1000),
+           G2 = list(V = 1, nu = 1, alpha.V=1000),
+           G3 = list(V = 1, nu = 1, alpha.V=1000),
+           G4 = list(V = 1, nu = 1, alpha.V=1000)),
+  R = list(V = 1, nu = 0.002)
+)
+model2.1 <- MCMCglmm(birth_weight ~ 1 + sexMF + scale(cohort), 
+                   random = ~id + mother + cohort + father,
+          ginverse = list(id = inverseAmatrix),
+          data = phenotypicdata, 
+          prior = prior2.1,
+          burnin = 10000, nitt = 30000, thin = 20) 
+```
+
+Which gives much better mixing:
+
+```{r}
+plot(model2.1$VCV[,4])
+```
+
+We can visualise the prior vs. all posterior variance parameter distributions.
+
+```{r priorposteriorcomp.model2.1}
+posterior_model2.1 <- model2.1$VCV %>% 
+  as_tibble() %>%
+  pivot_longer(cols = 1:ncol(model2.1$VCV), names_to = "component")
+
+prior_model2.1 <- tibble(value=seq(0.01, 5, by=0.01),
+                         density=dprior(v=value, V = 1, nu = 1, alpha.V = 1000), component="prior")
+
+ggplot(posterior_model2.1, mapping = aes(x=value, color=component)) + 
+  geom_density() + 
+  geom_line(data=prior_model2.1, aes(x=value, y=density)) +
+  theme_bw()
+```
+
+The `father` variance is close to the prior, as might be expected as there should be no variance due to father identity in the data.
 
 
 # Fixed effect prior
 
+Fixed effect priors are set in the `B` element of the prior. By default the fixed effect parameters have a multivariate normal distribution with means 0 and variance $10^10$.
 
-```{r model1.7, message=FALSE, results='hide'}
+In the model 1.7 below, we have three fixed effects (intercept, sex, and cohort)
+
+
+```{r model1.7bis, message=FALSE, results='hide', eval=FALSE}
 prior1.7 <- list(
   G = list(G1 = list(V = 1, nu = 1, alpha.V=1000),
            G2 = list(V = 1, nu = 1, alpha.V=1000),
@@ -255,20 +328,76 @@ model1.7 <- MCMCglmm(birth_weight ~ 1 + sexMF + scale(cohort),
           burnin = 10000, nitt = 30000, thin = 20) 
 ```
 
+so the implicit fixed effect prior is:
 
 ```{r}
-summary(model1.6)
-summary(model1.7)
+B = list(mu=rep(0, times=3), V=diag(3)*10^10)
+```
+
+In most case the default is fine, but in some cases you may need to set a strong prior on one or several fixed effect parameters.
+
+For instance, we may strongly believe the sex effect is `-3`. We need to modify the value of `mu` corresponding to the sex effect to `-3` and the diagonal element of V corresponding to the sex effect to a smaller number, reducing the spread of prior values for the parameter (here we will be very extreme and set that to `0.1`).  Since it is the second fixed effect in the model we modify the prior as:
+
+
+```{r}
+VpriorB <- diag(3)*10^10
+VpriorB[2,2] <- 0.1
+B = list(mu=c(0, -3, 0), V=VpriorB)
+
 ```
 
 
-# Multivariate variance-covariance prior
+
+```{r model1.7FEprior, message=FALSE, results='hide', eval=FALSE}
+prior1.7FEprio <- list(
+  B = list(mu=c(0, -3, 0), V=VpriorB),
+  G = list(G1 = list(V = 1, nu = 1, alpha.V=1000),
+           G2 = list(V = 1, nu = 1, alpha.V=1000),
+           G3 = list(V = 1, nu = 1, alpha.V=1000)),
+  R = list(V = 1, nu = 0.002)
+)
+
+model1.7FEprior <- MCMCglmm(birth_weight ~ 1 + sexMF + scale(cohort), 
+                   random = ~id + mother + cohort, # Random effect formula
+          ginverse = list(id = inverseAmatrix),
+          data = phenotypicdata, 
+          prior = prior1.7FEprio,
+          burnin = 10000, nitt = 30000, thin = 20) 
+```
 
 ```{r}
-mv_iw_prior <- function(v,V,nu,variable=1){
-  if(!is.matrix(V)){V <- as.matrix(V)}
-  nu.ast <- nu - dim(V)[1] + 1
-  V.ast <- V[variable,variable] * (nu/nu.ast) 
-  return(MCMCpack::dinvgamma(v, shape = nu.ast/2, scale = (nu.ast * V.ast)/2))
-}
+summary(model1.7FEprior)
 ```
+
+```{r}
+posteriorFEstrong <- tibble(value=model1.7FEprior$Sol[,"sexMFM"], prior="strong", component="posterior")
+posteriorFEstandard <- tibble(value=model1.7$Sol[,"sexMFM"], prior="weak", component="posterior")
+
+prior_FEstandard<- tibble(value=seq(-4, 1, by=0.01),
+                         density=dnorm(value, mean = 0, sd = sqrt(10^10)), component="prior", prior="weak")
+prior_FEstrong<- tibble(value=seq(-4, 1, by=0.01),
+                         density=dnorm(value, mean = -3, sd = sqrt(0.1)), component="prior", prior="strong")
+
+ggplot(bind_rows(posteriorFEstrong, posteriorFEstandard), aes(x=value, color=prior)) +
+  geom_density() +
+  geom_line(data=prior_FEstandard, aes(x=value, y=density, color=prior), linetype="dashed") +
+  geom_line(data=prior_FEstrong, aes(x=value, y=density, color=prior), linetype="dashed") + 
+  theme_bw()
+
+
+HPDinterval(model1.7FEprior$Sol[,"sexMFM"])
+HPDinterval(model1.7$Sol[,"sexMFM"])
+
+```
+
+
+<!-- # Multivariate variance-covariance prior -->
+
+<!-- ```{r} -->
+<!-- mv_iw_prior <- function(v,V,nu,variable=1){ -->
+<!--   if(!is.matrix(V)){V <- as.matrix(V)} -->
+<!--   nu.ast <- nu - dim(V)[1] + 1 -->
+<!--   V.ast <- V[variable,variable] * (nu/nu.ast)  -->
+<!--   return(MCMCpack::dinvgamma(v, shape = nu.ast/2, scale = (nu.ast * V.ast)/2)) -->
+<!-- } -->
+<!-- ``` -->
