@@ -1,9 +1,9 @@
 ---
-title: "Setting priors, more details"
+title: "Setting and visualising priors"
 linkTitle: "More details on priors"
 weight: 8
 description: >
-  Setting priors in details.
+  How to visualise and set different priors for fixed and random effects.
 output: 
   html_document: 
     keep_md: yes
@@ -29,16 +29,17 @@ phenotypicdata <- read.csv("data/gryphon.csv")
 pedigreedata <- read.csv("data/gryphonped.csv")
 ```
 
+```{r processdata, cache=TRUE}
+phenotypicdata$sexMF <- ifelse(phenotypicdata$sex==1, "M", "F")
+inverseAmatrix <- inverseA(pedigree = pedigreedata)$Ainv
+```
+
 This time we load the tidyverse for data wrangling and plotting, and MCMCpack for prior visualisation
 
 ```{r loadpackages, message=FALSE, results='hide'}
 library(MCMCglmm)
 library(tidyverse)
-```
-
-```{r processdata, cache=TRUE}
-phenotypicdata$sexMF <- ifelse(phenotypicdata$sex==1, "M", "F")
-inverseAmatrix <- inverseA(pedigree = pedigreedata)$Ainv
+library(MCMCpack)
 ```
 
 ```{r setseed, echo=FALSE}
@@ -64,15 +65,15 @@ dprior <- function(v, V=1, nu=0.002, alpha.V=1, alpha.mu=0){
 Let's visualise the distribution from the minimum (0, as a variance is positive) to an arbitrary value (here, 5):
 
 ```{r priorviz}
-v <- seq(0, 5, by=0.01)
-plot(dprior(v))
+v <- seq(0, 5, by=0.001)
+plot(x = v, y = dprior(v), xlab = "variance value", ylab = "prior probability density", type = "l")
 ```
 
-The density is infinite for `v=0` so the graph will look a bit different depending on how close to `0` the second value is (here `0.01`), but that will not matter when we compare the distribution to other distributions.
+The density tends to infinity for `v` approaching $0$ so the graph will look a bit different depending on how close to `0` the second `v` value is (here `0.001`), but that will not matter when we compare the prior to other distributions.
 
 Let's look at the prior vs. the posterior distributions of the various variance components from one of our previous models
 
-```{r model1.6, message=FALSE, results='hide'}
+```{r model1.6, message=FALSE, results='hide', cache=TRUE}
 prior1.6 <- list(
   G = list(G1 = list(V = 1, nu = 0.002),
            G2 = list(V = 1, nu = 0.002),
@@ -104,18 +105,18 @@ ggplot(posterior_model1.6, mapping = aes(x=value, color=component)) +
   theme_bw()
 ```
 
-So the prior is very dense close to `0` and then very flat and not dense for the range of estimated parameter values.
+So the prior is very dense close to `0` and then very flat and not dense for the range of estimated parameter values. That means the data brought lots of information and weigh heavily on the posterior distribution.
 
 
 # Different random effect priors
 
-We can always specify a prior so strong that it will override the signal in the data and influence the posterior distribution, but we do not want that.
+We can always specify a prior so strong that it will override the signal in the data and influence the posterior distribution, but we almost never want to do that.
 
 Therefore it is a good idea to check that the posterior distribution is not too influenced by the choice of a prior. 
 
 For instance, if we had set one of the `nu` parameters to 20, corresponding to a "high degree of belief", the estimation of the additive genetic variance ($V_A$, correspondong to the `id` random effect in our model) would have been subtly but significantly influenced by the prior:
 
-```{r model1.7, message=FALSE, results='hide'}
+```{r model1.7, message=FALSE, results='hide', cache=TRUE}
 prior1.7 <- list(
   G = list(G1 = list(V = 1, nu = 20),
            G2 = list(V = 1, nu = 0.002),
@@ -147,25 +148,29 @@ ggplot(posterior_model1.7, mapping = aes(x=value, color=component)) +
   theme_bw()
 ```
 
-Here are the two posterior distributions from the models with weak and strong priors:
+Here are the two posterior and prior distributions for $V_A$ from the models with weak and strong priors:
 
 ```{r va_differentpriors1.6_1.7}
-comparison_posteriors_1.6_1.7 <- bind_rows(posterior_model1.6 %>% filter(component=="id") %>% mutate(model="with weak prior"),
-                                  posterior_model1.7 %>% filter(component=="id") %>% mutate(model="with strong prior"))
-  
-ggplot(comparison_posteriors_1.6_1.7, mapping = aes(x=value, color=model)) + 
+comparison_posteriors_1.6_1.7 <- bind_rows(posterior_model1.6 %>% filter(component=="id") %>%
+                                             mutate(prior="weak", type="posterior"),
+                                  posterior_model1.7 %>% filter(component=="id") %>%
+                                    mutate(prior="strong", type="posterior"))
+
+comparison_priors_model1.6_1.7 <- bind_rows(tibble(prior_model1.6, prior="weak", type="prior"),
+                                           tibble(prior_model1.7, prior="strong", type="prior"))
+
+
+ggplot(comparison_posteriors_1.6_1.7, mapping = aes(x=value, color=prior, linetype=type)) + 
   geom_density() +
+    geom_line(data=comparison_priors_model1.6_1.7, aes(x=value, y=density, color=prior, linetype=type)) +
   theme_bw()
 ```
 
-```{r}
-HPDinterval(model1.6$VCV[,"id"])
-HPDinterval(model1.7$VCV[,"id"])
-```
+It looks like the posterior in `model1.7` is a sort of compromise between the strong prior and the signal in the data. In most cases we would like the posterior to reflect only the signal in the data.
 
-We can also try to lower the `nu` value to something much smaller:
+Instead, we can try to lower the `nu` value, for instance to `0.000002`:
 
-```{r model1.8, message=FALSE, results='hide'}
+```{r model1.8, message=FALSE, results='hide', cache=TRUE}
 prior1.8 <- list(
   G = list(G1 = list(V = 1, nu = 0.000002),
            G2 = list(V = 1, nu = 0.002),
@@ -185,9 +190,9 @@ posterior_model1.8 <- model1.8$VCV %>%
   pivot_longer(cols = 1:ncol(model1.8$VCV), names_to = "component")
 ```
 
-We can also specify an "improper prior" using the value of `nu=-1`. This prior is noninformative with regard to the marginal distribution of a variance, and so it is a good benchmark to check the prior does not influence the posterior much. However, we do not use it commonly as it can cause estimation and interpretation issues.
+We can also specify an "improper prior" using the value of `nu=-1`. This prior is noninformative with regard to the marginal distribution of a variance, and so it is a good benchmark to check the prior does not influence the posterior much. We do not use improper priors commonly as they can cause estimation and interpretation issues.
 
-```{r model1.9, message=FALSE, results='hide'}
+```{r model1.9, message=FALSE, results='hide', cache=TRUE}
 prior1.9 <- list(
   G = list(G1 = list(V = 1, nu = -1),
            G2 = list(V = 1, nu = 0.002),
@@ -208,24 +213,26 @@ posterior_model1.9 <- model1.9$VCV %>%
 ```
 
 
-
+Here are the posteriors from the four models using different priors:
 
 ```{r va_differentpriors1.6_1.8}
-comparison_posteriors_all <- bind_rows(posterior_model1.6 %>% filter(component=="id") %>% mutate(model="with standard prior"),
-                                  posterior_model1.7 %>% filter(component=="id") %>% mutate(model="with very strong prior"),
-                                  posterior_model1.8 %>% filter(component=="id") %>% mutate(model="with very weak prior"),
-                                  posterior_model1.9 %>% filter(component=="id") %>% mutate(model="with improper prior"))
+comparison_posteriors_all <- bind_rows(posterior_model1.6 %>% filter(component=="id") %>%
+                                         mutate(model="with standard prior"),
+                                  posterior_model1.7 %>% filter(component=="id") %>%
+                                    mutate(model="with very strong prior"),
+                                  posterior_model1.8 %>% filter(component=="id") %>%
+                                    mutate(model="with very weak prior"),
+                                  posterior_model1.9 %>% filter(component=="id") %>%
+                                    mutate(model="with improper prior"))
   
-
-
 ggplot(comparison_posteriors_all, mapping = aes(x=value, color=model)) + 
   geom_density() +
   geom_vline(data=comparison_posteriors_all %>% group_by(model) %>% summarise(median=median(value)),
-             aes(xintercept = median, color=model), linetype = "dashed")
+             aes(xintercept = median, color=model), linetype = "dashed")+
   theme_bw()
 ```
 
-The very strong prior is problematic, the three other ones seem in agreement (in particular the posterior medians are very close and the distributions mostly overlap).
+The very strong prior is problematic, the three other ones seem in agreement (the posterior medians are very close and the distributions mostly overlap).
 
 ## Parameter expanded prior
 
@@ -239,7 +246,7 @@ phenotypicdata <- merge(phenotypicdata, pedigreedata)
 
 Fathers were ignored when simulating the data, so we do not expect any variance to be explained by father identity.
 
-```{r}
+```{r model2, message=FALSE, results='hide', cache=TRUE}
 prior2.0 <- list(
   G = list(G1 = list(V = 1, nu = 0.002),
            G2 = list(V = 1, nu = 0.002),
@@ -256,15 +263,15 @@ model2 <- MCMCglmm(birth_weight ~ 1 + sexMF + scale(cohort),
           burnin = 10000, nitt = 30000, thin = 20) 
 ```
 
-The model suggests low variance, but the chain mixes poorly:
+The model suggests low father variance, but the chain mixes poorly:
 
-```{r}
-plot(model2$VCV[,4])
+```{r fathervar_model2}
+plot(model2$VCV[,"father"])
 ```
 
-We change all the G element to parameter expanded priors:
+We change each `G` element to a parameter expanded prior:
 
-```{r}
+```{r model2.1, message=FALSE, results='hide', cache=TRUE}
 prior2.1 <- list(
   G = list(G1 = list(V = 1, nu = 1, alpha.V=1000),
            G2 = list(V = 1, nu = 1, alpha.V=1000),
@@ -282,11 +289,11 @@ model2.1 <- MCMCglmm(birth_weight ~ 1 + sexMF + scale(cohort),
 
 Which gives much better mixing:
 
-```{r}
-plot(model2.1$VCV[,4])
+```{r fathervar_model2.1}
+plot(model2.1$VCV[,"father"])
 ```
 
-We can visualise the prior vs. all posterior variance parameter distributions.
+We can visualise the parameter expanded prior vs. all posterior variance parameter distributions.
 
 ```{r priorposteriorcomp.model2.1}
 posterior_model2.1 <- model2.1$VCV %>% 
@@ -307,7 +314,7 @@ The `father` variance is close to the prior, as might be expected as there shoul
 
 # Fixed effect prior
 
-Fixed effect priors are set in the `B` element of the prior. By default the fixed effect parameters have a multivariate normal distribution with means 0 and variance $10^10$.
+Fixed effect priors are set in the `B` element of the prior. By default the fixed effect parameters have a multivariate normal distribution with means $0$, variances $10^{10}$ and covariances $0$. It is a very flat prior, allowing for a very large range of values.
 
 In the model 1.7 below, we have three fixed effects (intercept, sex, and cohort)
 
@@ -334,9 +341,9 @@ so the implicit fixed effect prior is:
 B = list(mu=rep(0, times=3), V=diag(3)*10^10)
 ```
 
-In most case the default is fine, but in some cases you may need to set a strong prior on one or several fixed effect parameters.
+In most cases the default is fine, but sometimes you may need to set a strong prior on one or several fixed effect parameters.
 
-For instance, we may strongly believe the sex effect is `-3`. We need to modify the value of `mu` corresponding to the sex effect to `-3` and the diagonal element of V corresponding to the sex effect to a smaller number, reducing the spread of prior values for the parameter (here we will be very extreme and set that to `0.1`).  Since it is the second fixed effect in the model we modify the prior as:
+For instance, we may strongly believe the sex effect should be around `-3`. We need to modify the value of `mu` corresponding to the sex effect to `-3` and the diagonal element of V corresponding to the sex effect to a smaller number, reducing the spread of prior values for the parameter (here we will be very extreme and set that to `0.1`).  Since it is the second fixed effect in the model we modify the prior as:
 
 
 ```{r}
@@ -346,9 +353,9 @@ B = list(mu=c(0, -3, 0), V=VpriorB)
 
 ```
 
+Let's refit the model:
 
-
-```{r model1.7FEprior, message=FALSE, results='hide', eval=FALSE}
+```{r model1.7FEprior, message=FALSE, results='hide', cache=TRUE}
 prior1.7FEprio <- list(
   B = list(mu=c(0, -3, 0), V=VpriorB),
   G = list(G1 = list(V = 1, nu = 1, alpha.V=1000),
@@ -365,29 +372,19 @@ model1.7FEprior <- MCMCglmm(birth_weight ~ 1 + sexMF + scale(cohort),
           burnin = 10000, nitt = 30000, thin = 20) 
 ```
 
-```{r}
-summary(model1.7FEprior)
-```
-
-```{r}
+```{r priorFEcomparison}
 posteriorFEstrong <- tibble(value=model1.7FEprior$Sol[,"sexMFM"], prior="strong", component="posterior")
 posteriorFEstandard <- tibble(value=model1.7$Sol[,"sexMFM"], prior="weak", component="posterior")
 
-prior_FEstandard<- tibble(value=seq(-4, 1, by=0.01),
-                         density=dnorm(value, mean = 0, sd = sqrt(10^10)), component="prior", prior="weak")
-prior_FEstrong<- tibble(value=seq(-4, 1, by=0.01),
-                         density=dnorm(value, mean = -3, sd = sqrt(0.1)), component="prior", prior="strong")
+prior_FEcomparison <- bind_rows(tibble(value=seq(-4, 1, by=0.01),
+                         density=dnorm(value, mean = 0, sd = sqrt(10^10)), component="prior", prior="weak"),
+                         tibble(value=seq(-4, 1, by=0.01),
+                         density=dnorm(value, mean = -3, sd = sqrt(0.1)), component="prior", prior="strong"))
 
-ggplot(bind_rows(posteriorFEstrong, posteriorFEstandard), aes(x=value, color=prior)) +
+ggplot(bind_rows(posteriorFEstrong, posteriorFEstandard), aes(x=value, color=prior, linetype=component)) +
   geom_density() +
-  geom_line(data=prior_FEstandard, aes(x=value, y=density, color=prior), linetype="dashed") +
-  geom_line(data=prior_FEstrong, aes(x=value, y=density, color=prior), linetype="dashed") + 
+  geom_line(data=prior_FEcomparison, aes(x=value, y=density, color=prior, linetype=component)) +
   theme_bw()
-
-
-HPDinterval(model1.7FEprior$Sol[,"sexMFM"])
-HPDinterval(model1.7$Sol[,"sexMFM"])
-
 ```
 
 
