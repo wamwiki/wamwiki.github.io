@@ -21,7 +21,12 @@ Here we will see how to add fixed effects and random effects to our linear anima
 
 We still use the gryphon dataset with `birth_weight` as the response, and MCMCglmm.
 
-```{r}
+```{r, echo=FALSE}
+phenotypicdata <- read.csv("../../data/gryphon.csv")
+pedigreedata <- read.csv("../../data/gryphonped.csv")
+```
+
+```{r, eval=FALSE}
 phenotypicdata <- read.csv("data/gryphon.csv")
 pedigreedata <- read.csv("data/gryphonped.csv")
 ```
@@ -35,17 +40,23 @@ inverseAmatrix <- inverseA(pedigree = pedigreedata)$Ainv
 ```
 
 
-Previously we run the simple model `model1.2` (not run again here):
+Previously we run the simple model `model1.2` (no need to run it again here):
 
 ```{r, echo=FALSE}
 set.seed(12345)
 ```
 
-```{r model1.2, message=FALSE, results='hide', eval=FALSE}
+```{r model1.2, message=FALSE, results='hide'}
+prior1.2 <- list(
+  G = list(G1 = list(V = 1, nu = 0.002)),
+  R = list(V = 1, nu = 0.002)
+)
+
 model1.2 <- MCMCglmm(birth_weight ~ 1, #Response and Fixed effect formula
                    random = ~id, # Random effect formula
           ginverse = list(id = inverseAmatrix), # correlations among random effect levels
           data = phenotypicdata, # data set
+          prior = prior1.2, # explicit prior for the random effect and residuals
           burnin = 10000, nitt = 30000, thin = 20) # run the model for longer compare to the default
 ```
 
@@ -73,6 +84,7 @@ model1.3 <- MCMCglmm(birth_weight ~ 1 + sexMF, #Response and Fixed effect formul
                    random = ~id,
           ginverse = list(id = inverseAmatrix), 
           data = phenotypicdata,
+          prior = prior1.2, # we can keep the same prior
           burnin = 10000, nitt = 30000, thin = 20) 
 ```
 
@@ -169,11 +181,23 @@ For instance, it is very common to include the mother identity as a random effec
 
 To include mother as a random effect we write the variable name in the argument `random`, after `ìd +`. We do not need to change the argument `ginverse` if we assume that the levels of the additional random effect are uncorrelated (this is often not strictly true, and it can be interesting to model the genetic correlations between maternal levels, but this is a more advanced topic.)
 
+We also need to adjust the prior. As we now have two random effects, the `G` elements will contain two identical elements, one for the `id` random effect, one for the `mother` random effect:
+
+```{r}
+prior1.5 <- list(
+  G = list(G1 = list(V = 1, nu = 0.002),
+           G2 = list(V = 1, nu = 0.002)),
+  R = list(V = 1, nu = 0.002)
+)
+```
+
+
 ```{r model1.5, message=FALSE, results='hide', cache=TRUE}
 model1.5 <- MCMCglmm(birth_weight ~ 1 + sexMF + scale(cohort), 
                    random = ~id + mother, # Random effect formula
           ginverse = list(id = inverseAmatrix),
           data = phenotypicdata, 
+          prior = prior1.5,
           burnin = 10000, nitt = 30000, thin = 20) 
 ```
 
@@ -218,10 +242,18 @@ We can add a third random effect, for instance cohort (yes, we can include cohor
 
 
 ```{r model1.6, message=FALSE, results='hide', cache=TRUE}
+prior1.6 <- list(
+  G = list(G1 = list(V = 1, nu = 0.002),
+           G2 = list(V = 1, nu = 0.002),
+           G3 = list(V = 1, nu = 0.002)),
+  R = list(V = 1, nu = 0.002)
+)
+
 model1.6 <- MCMCglmm(birth_weight ~ 1 + sexMF + scale(cohort), 
                    random = ~id + mother + cohort, # Random effect formula
           ginverse = list(id = inverseAmatrix),
           data = phenotypicdata, 
+          prior = prior1.6,
           burnin = 10000, nitt = 30000, thin = 20) 
 ```
 
