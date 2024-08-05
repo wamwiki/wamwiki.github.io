@@ -1,0 +1,73 @@
+---
+title: "Repeated measures aninmal model"
+linkTitle: "Repeated measures"
+weight: 9
+description: >
+  How to fit and interpret permanent environment effects.
+output: 
+  html_document: 
+    keep_md: yes
+---
+
+
+
+
+{{% alert title="Permanent environment" color="primary" %}}
+Whenever a dataset contains repeated measurements of a trait for a same individual it is crucial to model **"permanent environments"**. Permanent environments are hypothetical non-genetic effects that have a long-lasting influence on phenotypic variation. If not accounted for, repeated measurements tend to inflate estimates of additive genetic variance and heritability. As a reward of modelling permanent environments you get to estimate **repeatability**.
+{{% /alert %}}
+
+{{% alert title="We use a different dataset!" color="warning" %}}
+To model repeated measurements we switch to a new dataset, `gryphonRepeatedMeas.csv`. We will model `laydate`, which is observed once a year in females when they breed. We want to estimate the heritability and, this time, the **repeatability** of `laydate`. The pedigree is the same we have used before. 
+{{% /alert %}}
+
+
+
+``` r
+library(MCMCglmm)
+```
+
+
+
+
+
+``` r
+phenotypicdata <- read.csv("data/gryphonRepeatedMeas.csv")
+pedigreedata <- read.csv("data/gryphonped.csv")
+```
+
+
+``` r
+phenotypicdata$sexMF <- ifelse(phenotypicdata$sex==1, "M", "F")
+inverseAmatrix <- inverseA(pedigree = pedigreedata)$Ainv
+```
+
+
+
+
+
+
+{{% alert title="Repeatability and heritability" color="primary" %}}
+
+The model we fitted can be written as
+$$
+y_{i,t} = \mu + \boldsymbol{X\beta} + a_i + r_i + \epsilon_{i,t}
+$$
+with $y_{i,t}$ the `laydate` of individual $i$ on year $t$, $\mu$ the intercept, $\boldsymbol{X\beta}$ fixed effects, $a_i$ individual $i$ breeding value, $r_i$ individual $i$ permanent environment or non-additive-genetic repeatable value and $\epsilon_{i,t}$ the residual. 
+The model assumes $a_i$, $r_i$, and $\epsilon_{i,t}$ are drawn from Gaussian distribution of variance $V_A$, $V_R$ and $V_E$, respectively. 
+
+Narrow-sense heritability and repeatability are ratios of phenotypic variance explained by additive genetic variance, or repeatable variance (which includes additive genetic and other sources of variance). Depending on the context and research question, the phenotypic variance ($V_P$) will be the sum of $V_A$, $V_R$, $V_E$, and optionally the variance explained by all or part of the fixed effects ($V_F$).
+
+Narrow-sense heritability is defined as:
+$$ h^2 = \frac{V_A}{V_P} = \frac{V_A}{V_A + V_R + V_E + V_F} $$ 
+and repeatability as:
+$$ R=\frac{V_A + V_R}{V_P} =  \frac{V_A + V_R}{V_A + V_R + V_E + V_F} $$. 
+
+
+{{% /alert %}}
+
+
+## Reading to go further
+
+- Kruuk & Hadfield, 2007. How to separate genetic and environmental causes of similarity between relatives. Journal of Evolutionary Biology https://doi.org/10.1111/j.1420-9101.2007.01377.x
+- Ponzi & al, 2018. Heritability, selection, and the response to selection in the presence of phenotypic measurement error: Effects, cures, and the role of repeated measurements. Evolution https://doi.org/10.1111/evo.13573
+
