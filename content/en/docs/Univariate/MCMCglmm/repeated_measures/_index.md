@@ -31,22 +31,156 @@ library(MCMCglmm)
 
 
 ``` r
-phenotypicdata <- read.csv("data/gryphonRepeatedMeas.csv")
+repeatedphenotypicdata <- read.csv("data/gryphonRepeatedMeas.csv")
 pedigreedata <- read.csv("data/gryphonped.csv")
 ```
 
 
 ``` r
-phenotypicdata$sexMF <- ifelse(phenotypicdata$sex==1, "M", "F")
 inverseAmatrix <- inverseA(pedigree = pedigreedata)$Ainv
 ```
 
 
 
 
+The key to repeated measurement animal models is having a duplicate of the individual identity in the dataset. This allows to fit for each individual a breeding value, that is connected to the relatedness matrix, and a permanent environment value that is not. 
+Let's keep `id` as the additive genetic random effect and call the duplicate `pe` (for permanent environment).
 
 
-{{% alert title="Repeatability and heritability" color="primary" %}}
+``` r
+repeatedphenotypicdata$pe <- repeatedphenotypicdata$id
+```
+
+We will fit a random effect for `id`, one for `pe` and one for `cohort`, so the `G` element of the prior will have three elements:
+
+
+``` r
+prior_model_repeat_1 <- list(G = list(G1 =  list(V = 1, nu = 0.002),
+                                     G2 =  list(V = 1, nu = 0.002),
+                                     G3 =  list(V = 1, nu = 0.002)),
+                            R =  list(V = 1, nu = 0.002))
+```
+
+
+
+``` r
+model_repeat_1 <- MCMCglmm(lay_date ~ 1 + age, 
+                           random = ~ id + pe + cohort, 
+                           data = repeatedphenotypicdata,
+                           ginverse = list(id=inverseAmatrix), 
+                           prior = prior_model_repeat_1, 
+                           burnin = 10000, nitt = 30000, thin = 20)
+```
+
+The mixing is okay but not great, and the `id` and `pe` chains appear to be a bit in mirror image.
+
+
+``` r
+plot(model_repeat_1$VCV[,c("id", "pe")])
+```
+
+![](idpemcmc-1.png)<!-- -->
+
+ That is usual in these models as it is difficult to disentangle the two effects that are linked to the same individual identity. 
+ We can see that the two posterior distributions are negatively correlated:
+
+
+``` r
+plot(as.matrix(model_repeat_1$VCV[,c("id", "pe")]))
+```
+
+![](idpecor-1.png)<!-- -->
+
+It could be a good idea to rerun the model with parameter-expanded priors and / or with more iterations to get a bit more precision on credible intervals.
+
+Assuming we are happy with the model fit, we can compute heritability as:
+
+
+``` r
+heritability1 <- model_repeat_1$VCV[,"id"] / rowSums(model_repeat_1$VCV)
+
+median(heritability1); HPDinterval(heritability1)
+```
+
+```
+## [1] 0.1674188
+```
+
+```
+##           lower     upper
+## var1 0.06635602 0.2886643
+## attr(,"Probability")
+## [1] 0.95
+```
+
+and repeatability as:
+
+
+``` r
+repeatability1 <- (model_repeat_1$VCV[,"id"] + model_repeat_1$VCV[,"pe"]) / 
+                                                rowSums(model_repeat_1$VCV)
+
+median(repeatability1); HPDinterval(repeatability1)
+```
+
+```
+## [1] 0.3387718
+```
+
+```
+##          lower     upper
+## var1 0.2781737 0.3955035
+## attr(,"Probability")
+## [1] 0.95
+```
+
+If we want to take into account the variation due to age, the calculations become:
+
+
+``` r
+predictions <- model_repeat_1$X %*% t(model_repeat_1$Sol)
+fixef_variance <- apply(predictions, MARGIN = 2, var)
+
+heritability2 <- model_repeat_1$VCV[,"id"] / (rowSums(model_repeat_1$VCV) + fixef_variance)
+
+median(heritability2); HPDinterval(heritability2)
+```
+
+```
+## [1] 0.1578724
+```
+
+```
+##           lower     upper
+## var1 0.06463513 0.2743074
+## attr(,"Probability")
+## [1] 0.95
+```
+
+and
+
+
+``` r
+repeatability2 <- (model_repeat_1$VCV[,"id"] + model_repeat_1$VCV[,"pe"]) /
+                            (rowSums(model_repeat_1$VCV) + fixef_variance )
+
+median(repeatability2); HPDinterval(repeatability2)
+```
+
+```
+## [1] 0.3190819
+```
+
+```
+##          lower     upper
+## var1 0.2636708 0.3759841
+## attr(,"Probability")
+## [1] 0.95
+```
+
+
+
+{{% alert title="How to compute heritability and repeatability " color="primary" %}}
 
 The model we fitted can be written as
 $$
@@ -60,11 +194,16 @@ Narrow-sense heritability and repeatability are ratios of phenotypic variance ex
 Narrow-sense heritability is defined as:
 $$ h^2 = \frac{V_A}{V_P} = \frac{V_A}{V_A + V_R + V_E + V_F} $$ 
 and repeatability as:
-$$ R=\frac{V_A + V_R}{V_P} =  \frac{V_A + V_R}{V_A + V_R + V_E + V_F} $$. 
+$$ R^2=\frac{V_A + V_R}{V_P} =  \frac{V_A + V_R}{V_A + V_R + V_E + V_F} $$. 
 
+Defined this way, repeatability is always greater (or equal) than heritability.
 
 {{% /alert %}}
 
+
+{{% alert title="Repeatability over which time frame?" color="secondary" %}}
+Be aware that repeatability is not uniquely defined for a trait and population, but depends a lot on data selection and model choice. The time frame considered is particularly important. For instance, in repeatability could be high when estimated within a year, but much lower across different years. It is possible to estimate several types of repeatabilities with a single model (see Ponzi et al. below).
+{{% /alert %}}
 
 ## Reading to go further
 
