@@ -11,3 +11,4 @@ themes/docsy/
 .hugo_build.lock
 *_cache/
 *_files/
+_index.html
