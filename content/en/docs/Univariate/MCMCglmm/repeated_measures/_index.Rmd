@@ -1,5 +1,5 @@
 ---
-title: "Repeated measures aninmal model"
+title: "Repeated measures animal model"
 linkTitle: "Repeated measures"
 weight: 9
 description: >
@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 ```
 
 {{% alert title="Permanent environment" color="primary" %}}
-Whenever a dataset contains repeated measurements of a trait for a same individual it is crucial to model **"permanent environments"**. Permanent environments are hypothetical non-genetic effects that have a long-lasting influence on phenotypic variation. If not accounted for, repeated measurements tend to inflate estimates of additive genetic variance and heritability. As a reward of modelling permanent environments you get to estimate **repeatability**.
+Whenever a dataset contains repeated measurements of a trait for a same individual it is possible to model variance attributed to **"permanent environmental effects"**. Permanent environmental effects are persistant non-genetic effects that influence variation among individuals and therefore impact phenotypic variation. If not accounted for, permanent environmental effects can inflate estimates of additive genetic variance and heritability. As a reward of modelling permanent environments you get to estimate **repeatability**.
 {{% /alert %}}
 
 {{% alert title="We use a different dataset!" color="warning" %}}
@@ -50,7 +50,7 @@ inverseAmatrix <- inverseA(pedigree = pedigreedata)$Ainv
 set.seed(12345)
 ```
 
-The key to repeated measurement animal models is having a duplicate of the individual identity in the dataset. This allows to fit for each individual a breeding value, that is connected to the relatedness matrix, and a permanent environment value that is not. 
+The key to repeated measurement animal models is having a duplicate of the individual identity in the dataset. This allows to estimate a breeding value for each individual, that is connected to the relatedness matrix, and a permanent environment value that is not. 
 Let's keep `id` as the additive genetic random effect and call the duplicate `pe` (for permanent environment).
 
 ```{r duplicateid}
@@ -152,7 +152,7 @@ Defined this way, repeatability is always greater (or equal) than heritability.
 
 
 {{% alert title="Repeatability over which time frame?" color="secondary" %}}
-Be aware that repeatability is not uniquely defined for a trait and population, but depends a lot on data selection and model choice. The time frame considered is particularly important. For instance, in repeatability could be high when estimated within a year, but much lower across different years. It is possible to estimate several types of repeatabilities with a single model (see Ponzi et al. below).
+Be aware that repeatability is not uniquely defined for a trait and population, but depends a lot on data selection and model choice. The time frame considered is particularly important. For instance, repeatability could be high when estimated within a year, but much lower across different years. It is possible to estimate several types of repeatabilities with a single model (see Ponzi et al. below).
 {{% /alert %}}
 
 ## Reading to go further
