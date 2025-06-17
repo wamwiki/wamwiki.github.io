@@ -17,8 +17,13 @@
   },
   "homepage": "https://github.com/google/docsy-example#readme",
   "devDependencies": {
+<<<<<<< dependabot/npm_and_yarn/autoprefixer-10.4.21
+    "autoprefixer": "^10.4.21",
+    "postcss-cli": "^11.0.0",
+=======
     "autoprefixer": "^10.4.20",
     "postcss-cli": "^11.0.1",
+>>>>>>> master
     "postcss": "^8.5.1"
   }
 }
