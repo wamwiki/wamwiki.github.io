@@ -37,6 +37,7 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version: '1.21.6' #
+          cache: false
       - name: setup Hugo
         run: sudo snap install hugo
       - name: Checkout
