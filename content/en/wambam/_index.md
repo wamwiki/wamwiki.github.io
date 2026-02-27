@@ -20,7 +20,7 @@ WAMBAM is a small international workshop that happens (roughly) every two years 
 
 {{% blocks/lead %}}
 
-The next meeting is scheduled to happen in France in August 2026. Find information [here](/wambam/_wambam26info).
+**The next meeting is scheduled to happen in France in August 2026. Find information [here](/wambam/_wambam26info).**
 
 {{% /blocks/lead %}}
 
