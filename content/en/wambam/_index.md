@@ -28,8 +28,21 @@ WAMBAM is a small international workshop that happens (roughly) every two years 
 ## **Past meetings**
 {{% /blocks/lead %}}
 
-{{% alert title="WAMBAM 7 - , England, September 2023" color="primary" %}}
-After having been postponed for a few years due to the COVID-19 pandemic
+{{% alert title="WAMBAM 7 - Okehampton, England, September 2023" color="primary" %}}
+The meeting was organized by Simon Evans and Alastair Wilson (both University of Exeter).
+After having been postponed for a few years due to the COVID-19 pandemic it was very exciting meeting up again. Sadly COVID was still in the air and several people missed out!
+We talked about personality, missing fraction, what the hell is fitness, social interactions, telomers, the use of genomic data, and the relevance of everything we do to demography and wildlife management.
+
+Day trip: Walk to the Bearslake inn through the moor (yes, the one with the nasty hound). 
+
+Birders highlight: Maybe stonechat
+
+Non-birder wildlife highlight: Dartmoor pony (?)
+
+<figure>
+	<img src="wambam2023.jpg" style="width:40%">
+	<figcaption> Participants of WAMBAM 2023.
+</figure> 
 {{% /alert %}}
 
 {{% alert title="WAMBAM 6 - La Huardière, Québec, July 2017" color="primary" %}}
