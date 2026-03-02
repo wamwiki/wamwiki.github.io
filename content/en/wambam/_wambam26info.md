@@ -2,7 +2,7 @@
 title: "Information about WAMBAM 2026"
 linkTitle: "WAMBAM2026"
 type: blog
-date:  2026-02-27T14:50:00+01:00
+date:  2026-03-02T14:50:00+01:00
 weight: 30
 description: >
   WAMBAM comes to western France in August 2026!
@@ -13,15 +13,15 @@ description: >
 
 WAMBAM is on track to happen on August 24-28/29th 2026, in Chizé forest, western France. 
 
-**You need to let us know if you want to come, see information below**
+**You need to let us know if you want to participate, see information below**
 
 {{% /blocks/cover %}}
 
-## How to apply to come and submit an abstract
+## How to participate to come and submit an abstract
 
-As for previous WAMBAM we would like to keep the meeting small, with around 45 people. It is possible not everyone who wants to join will be able to. That is why you need to apply to come, let us know if you would like to give a talk, propose a discussion topic or join in a hackaton.
+As for previous WAMBAM we would like to keep the meeting small, with around 45 people. It is possible not everyone who wants to join will be able to. That is why you need to apply to participate, let us know if you would like to give a talk, propose a discussion topic or join in a hackaton.
 
-To do so, **please fill-in this form: [https://forms.gle/UrfQckuYvd21U6By6](https://forms.gle/UrfQckuYvd21U6By6)**
+To do so, **please fill-in this form: [https://framaforms.org/wambam-2026-apply-submit-1772444984](https://framaforms.org/wambam-2026-apply-submit-1772444984)**
 
 When selecting participants we will try to find a balance between the different research groups, career stages, research topics...
 
@@ -29,7 +29,7 @@ When selecting participants we will try to find a balance between the different 
 
 Timothée Bonnet, Pierre de Villemereuil, Céline Téplitsky, Anne Charmantier and Benoît Pujol.
 
-Get in touch with Timothée first if you have questions, comments on complaints. 
+Get in touch with Timothée first if you have questions, comments or complaints. 
 
 
 ## When?
