@@ -2,7 +2,7 @@
 title: "Information about WAMBAM 2026"
 linkTitle: "WAMBAM2026"
 type: blog
-date:  2026-03-02T14:50:00+01:00
+date:  2026-03-02T14:00:00+01:00
 weight: 30
 description: >
   WAMBAM comes to western France in August 2026!
