@@ -6,6 +6,9 @@ date:  2026-03-02T14:00:00+01:00
 weight: 30
 description: >
   WAMBAM comes to western France in August 2026!
+output: 
+  html_document: 
+    keep_md: yes
 ---
 
 
@@ -43,15 +46,28 @@ WAMBAM itself will end on Friday August 28th before noon.
 
 Le Prioulet ([https://www.leprioulet.com/](https://www.leprioulet.com/)), in Villiers-en-Bois in the middle of Chizé forest. 
 
+That is 50 Km inland right in the middle of the French west coast, about half way between Bordeaux and Nantes (or half way between England and Spain if you don't know the cities).
+
+![](/wambam/prioulet.jpg)
+
 We rent out the whole venue, where we will have talks, meals and accomodation. 
 
 We will have access to 13 bedrooms, with 2 to 8 beds per bedroom. You will have to bring your own sleeping bag or sheets (or ask us to organise something if you cannot fit them into your luggage). Camping (tent or camping-car) is allowed. 
 
-Le Prioulet is 2 Km away from the CEBC research campus (we can easily go visit if you are interested or know people there), and adjacent to Zoodysée, a European wildlife zoo.
 
+**What is around?**
+
+* 0.2 Km: Zoodysée, a European wildlife zoo with large enclosures, starring wolves, brown bears, otters, bisons, owls...
+* 1 Km: Chizé forest, with some old growth, woodpeckers, owls, badgers, deer, newts...
+* 2km: CEBC research campus (we can easily go visit if you are interested or know people there)
+* 3 Km: openfield farmland with common bustards, harriers, black-winged kite, stone curlews...
+* 25 Km: The small city of Melle, where you can visit major silver mines dating back from the 8th century and beautiful 11th century Romanesque churches
+* 50-70 Km: Major bird migration stopover and breeding areas along the coast. In late August you can expect lots of wadders, warblers, raptors, storks, ibises...
+* 65 Km: The city of La Rochelle, with its fortified harbour, towers, old covered streets... 
+
+Local specialties include many goat cheeses, cognac, pineau, oysters.
 
 {{% alert title = "Provisional information subject to change" color = "warning" %}}
-
 
 ## Registration fee
 
