@@ -75,7 +75,7 @@ We have received a grant from La Rochelle University and are still waiting to he
 
 Without that second grant the full fee would be 280€, with a reduced fee of 140€ for students.
 
-Participants to the optional hackaton would have to pay one more night of accomodation (hopefully only around 20€). 
+Participants to the optional hackaton would have to pay one more night of accommodation (hopefully only around 20€). 
 
 
 ## Program 
