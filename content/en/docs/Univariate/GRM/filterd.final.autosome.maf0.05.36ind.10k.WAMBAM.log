@@ -1,0 +1,38 @@
+*******************************************************************
+* Genome-wide Complex Trait Analysis (GCTA)
+* version v1.94.1 Linux
+* Built at Nov 15 2022 21:14:25, by GCC 8.5
+* (C) 2010-present, Yang Lab, Westlake University
+* Please report bugs to Jian Yang <jian.yang@westlake.edu.cn>
+*******************************************************************
+Analysis started at 23:43:20 CEST on Fri Aug 28 2026.
+Hostname: login2
+
+Options: 
+ 
+--bfile filterd.final.autosome.maf0.05_bodymass_h2_gwas_50ind_10k_WAMBAM 
+--make-grm 
+--autosome-num 29 
+--out filterd.final.autosome.maf0.05.36ind.10k.WAMBAM 
+
+Note: GRM is computed using the SNPs on the autosomes.
+Reading PLINK FAM file from [filterd.final.autosome.maf0.05_bodymass_h2_gwas_50ind_10k_WAMBAM.fam]...
+36 individuals to be included from FAM file.
+36 individuals to be included. 0 males, 0 females, 36 unknown.
+Reading PLINK BIM file from [filterd.final.autosome.maf0.05_bodymass_h2_gwas_50ind_10k_WAMBAM.bim]...
+10000 SNPs to be included from BIM file(s).
+Computing the genetic relationship matrix (GRM) v2 ...
+Subset 1/1, no. subject 1-36
+  36 samples, 10000 markers, 666 GRM elements
+IDs for the GRM file have been saved in the file [filterd.final.autosome.maf0.05.36ind.10k.WAMBAM.grm.id]
+Computing GRM...
+  100% finished in 0.0 sec
+10000 SNPs have been processed.
+  Used 9995 valid SNPs.
+The GRM computation is completed.
+Saving GRM...
+GRM has been saved in the file [filterd.final.autosome.maf0.05.36ind.10k.WAMBAM.grm.bin]
+Number of SNPs in each pair of individuals has been saved in the file [filterd.final.autosome.maf0.05.36ind.10k.WAMBAM.grm.N.bin]
+
+Analysis finished at 23:43:20 CEST on Fri Aug 28 2026
+Overall computational time: 0.12 sec.
