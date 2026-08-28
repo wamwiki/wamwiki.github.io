@@ -11,12 +11,7 @@ output:
 ---
 
 
-```{r setup_fig, include=FALSE}
-knitr::opts_chunk$set(
-  fig.path = "",
-  cache = FALSE
-  )
-```
+
 
 > If you have missed the page to fit a simple univariate model in gremlin, click [here](/docs/univariate/gremlin/) (Yes, you were supposed to click on gremlin in the menu on the left to get to the first page)
 
@@ -27,24 +22,28 @@ $ h^2 = V_A / V_P = V_A / (V_A + V_R)$.
 
 We still use the gryphon dataset with `birth_weight` as the response, and gremlin.
 
-```{r}
+
+``` r
 phenotypicdata <- read.csv("../data/gryphon.csv")
 pedigreedata <- read.csv("../data/gryphonped.csv")
 ```
 
-```{r, message=FALSE, results='hide'}
+
+``` r
 library(gremlin)
 library(nadiv)
 ```
 
-```{r}
+
+``` r
 inverseAmatrix <- makeAinv(pedigree = pedigreedata)$Ainv
 ```
 
 We re-run the model we used previously:
 
 
-```{r grMod1.2, message=FALSE, results='hide'}
+
+``` r
 grMod1.2 <- gremlin(birth_weight ~ 1, #Response and Fixed effect formula
                    random = ~ id, # Random effect formula
           ginverse = list(id = inverseAmatrix), # correlations among random effect levels (here breeding values)
@@ -59,8 +58,14 @@ One could get a rough calculation of heritability using the values in the summar
 The `gremlin` function `deltaSE()` implements this method for us. The function has a few different ways to imput your function of variance components (see the help documentation for more information) and the format below uses the gremlin names for variance components in a formula
 
 
-```{r deltaSE_h2}
+
+``` r
 (h2 <- deltaSE(h2 ~ G.id / (G.id + ResVar1), grMod1.2))
+```
+
+```
+##     Estimate Std. Error
+## h2 0.4700157 0.07651017
 ```
 
 
