@@ -14,6 +14,8 @@ output:
 
 > This is a tutorial about how to fit an 'animal model' with GRM (genetic relationship matrix). We provide the sample with the Seychelles warbler data subset including body mass, tarsus length, and also other factors data of 36 individuals and the GRM were calculated from 10k snps genomic data filtered with PLINK -maf0.05 ).
 
+dataset and GRM files can be downloaded from the [Wamwiki github](https://github.com/wamwiki/wamwiki.github.io/tree/master/content/en/docs/Univariate/GRM)
+
 # Why do you want a GRM?
 
 - NGS is (relatively) getting cheaper
