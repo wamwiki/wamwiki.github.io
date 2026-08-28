@@ -17,7 +17,9 @@ We will use the simulated gryphon dataset ( [download zip file](/docs/data/gryph
 We need to load both the phenotypic data `gryphon.csv` and the pedigree `gryphonped.csv`.
 
 
-```r
+
+
+``` r
 phenotypicdata <- read.csv("data/gryphon.csv")
 pedigreedata <- read.csv("data/gryphonped.csv")
 ```
@@ -25,7 +27,7 @@ pedigreedata <- read.csv("data/gryphonped.csv")
 The phenotypic data look like this:
 
 
-```r
+``` r
 head(phenotypicdata)
 ```
 
@@ -44,7 +46,7 @@ We will use `birth_weight` as a response variable.
 And the pedigree looks like this:
 
 
-```r
+``` r
 head(pedigreedata)
 ```
 
@@ -58,7 +60,7 @@ head(pedigreedata)
 ## 6 1288     NA     NA
 ```
 
-```r
+``` r
 tail(pedigreedata)
 ```
 
@@ -80,15 +82,16 @@ Here is the simplest implementation of an animal model in brms.
 First, we load the package:
 
 
-```r
-library(brms);library(nadiv)
+``` r
+library(brms)
+library(nadiv)
 ```
 
 To be able to fit an animal model, brms needs the relatedness (relationship) matrix of the pedigree and not its inverse (as in other softwares). This can be estimated using the nadiv package created by Pr. Matthew Wolak (https://cran.r-project.org/web/packages/nadiv/index.html).
 
 
-```r
-Amat <- as.matrix(nadiv::makeA(pedigreedata))
+``` r
+Amat <- makeA(pedigreedata)
 ```
 
 Now we can fit the model of `birth_weight` to estimate three parameters:
@@ -101,20 +104,20 @@ Now we can fit the model of `birth_weight` to estimate three parameters:
 
 
 
-```r
+``` r
 brms_m1.1 <- brm(
   birth_weight ~ 1 + #Response and Fixed effect formula
     (1 | gr(id, cov = Amat)),# Random effect formula & correlations among random effect levels (here breeding values)
   data = phenotypicdata,# data set
   data2 = list(Amat = Amat), # Amatrix
   family = gaussian(), # family
-  chains = 2, cores = 2, iter = 2000 # two mcmc chains run on two cores (in parallel) for 2000 iterations each
+  chains = 4, cores = 4, iter = 2000 # four mcmc chains run on four cores (in parallel) for 2000 iterations each
 )
 ```
 
 
 
-```r
+``` r
 plot(brms_m1.1)
 ```
 

@@ -1,0 +1,71 @@
+---
+title: "Computing heritability"
+linkTitle: "Computing heritability"
+weight: 6
+description: >
+  Computing heritability.
+author: Matthew Wolak
+output: 
+  html_document: 
+    keep_md: yes
+---
+
+
+
+
+> If you have missed the page to fit a simple univariate model in gremlin, click [here](/docs/univariate/gremlin/) (Yes, you were supposed to click on gremlin in the menu on the left to get to the first page)
+
+Here we show how to compute narrow-sense heritability from a simple linear animal model.
+
+Narrow-sense heritability, or heritability for short, can be defined as the ratio of additive genetic variance over phenotypic variance. In our case, we have modelled only the mean, the additive genetic variance and the residual variance, so heritability  is:
+$ h^2 = V_A / V_P = V_A / (V_A + V_R)$.
+
+We still use the gryphon dataset with `birth_weight` as the response, and gremlin.
+
+
+``` r
+phenotypicdata <- read.csv("../data/gryphon.csv")
+pedigreedata <- read.csv("../data/gryphonped.csv")
+```
+
+
+``` r
+library(gremlin)
+library(nadiv)
+```
+
+
+``` r
+inverseAmatrix <- makeAinv(pedigree = pedigreedata)$Ainv
+```
+
+We re-run the model we used previously:
+
+
+
+``` r
+grMod1.2 <- gremlin(birth_weight ~ 1, #Response and Fixed effect formula
+                   random = ~ id, # Random effect formula
+          ginverse = list(id = inverseAmatrix), # correlations among random effect levels (here breeding values)
+          data = phenotypicdata) # data set
+
+summary(grMod1.2)
+```
+
+
+One could get a rough calculation of heritability using the values in the summary, but it is much better to make the calculation while including the uncertainty in the estimates. It is actually quite simple in `gremlin` and requires the _delta method_ which is way to approximate the standard error of a function of estimated parameters. 
+
+The `gremlin` function `deltaSE()` implements this method for us. The function has a few different ways to imput your function of variance components (see the help documentation for more information) and the format below uses the gremlin names for variance components in a formula
+
+
+
+``` r
+(h2 <- deltaSE(h2 ~ G.id / (G.id + ResVar1), grMod1.2))
+```
+
+```
+##     Estimate Std. Error
+## h2 0.4700157 0.07651017
+```
+
+

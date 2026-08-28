@@ -1,0 +1,85 @@
+---
+title: "Computing heritability"
+linkTitle: "Computing heritability"
+weight: 6
+description: >
+  Computing heritability.
+output: 
+  html_document: 
+    keep_md: yes
+---
+
+
+```{r setup_fig, include=FALSE}
+knitr::opts_chunk$set(
+  fig.path = "",
+  cache = TRUE
+  )
+```
+
+> If you have missed the page to fit a simple univariate model in brms, click [here](/docs/univariate/brms/) (Yes, you were supposed to click on brms in the menu on the left to get to the first page)
+
+Here we show how to compute narrow-sense heritability from a simple linear animal model.
+Narrow-sense heritability, or heritability for short, can be defined as the ratio of additive genetic variance over phenotypic variance. In our case, we have modelled only the mean, the additive genetic variance and the residual variance, so heritability  is:
+$ h^2 = V_A / V_P = V_A / (V_A + V_R)$.
+
+We still use the gryphon dataset with `birth_weight` as the response, and brms.
+
+```{r, echo=FALSE}
+phenotypicdata <- read.csv("../../data/gryphon.csv")
+pedigreedata <- read.csv("../../data/gryphonped.csv")
+```
+
+```{r, eval=FALSE}
+phenotypicdata <- read.csv("data/gryphon.csv")
+pedigreedata <- read.csv("data/gryphonped.csv")
+```
+
+```{r, message=FALSE, results='hide'}
+library(brms)
+library(nadiv)
+```
+
+```{r, cache=TRUE}
+Amat <- nadiv::makeA(pedigree = pedigreedata)
+```
+
+We re-run the model we used previously:
+
+```{r, echo=FALSE}
+set.seed(12345)
+```
+
+```{r brms_m1.2, cache=TRUE, message=FALSE, warning=FALSE, results='hide'}
+brms_m1.2 <- brm(
+  birth_weight ~ 1 + #Response and Fixed effect formula
+    (1 | gr(id, cov = Amat)),# Random effect formula & correlations among random effect levels (here breeding values)
+  data = phenotypicdata,# data set
+  data2 = list(Amat = Amat), # Amatrix
+  family = gaussian(), # family
+  chains = 4, cores = 4, iter = 2000 # four mcmc chains run on four cores (in parallel) for 2000 iterations each
+)
+```
+
+```{r}
+summary(brms_m1.2)
+```
+
+One could get a rough calculation of heritability using the values in the summary, but it is much better to apply (i.e., integrate) the calculation on the full posterior distribution. It is actually quite simple in brms and in general an advantage of Bayesian approaches.
+
+We can provide the equation of the heritability to the `hypothesis()` function in brms, using the name of the additive genetic standard deviation (`sd_id__Intercept`) and of the residual standard deviation (`sigma`):
+
+```{r}
+h2 <- hypothesis(brms_m1.2, "sd_id__Intercept^2 / (sd_id__Intercept^2 + sigma^2) = 0", class = NULL)
+```
+
+We can look at the posterior mean and credible intervals provided by the function:
+```{r}
+print(h2)
+```
+
+We can then look at the distribution of heritability:
+
+```{r h2posterior}
+plot(h2)
+```
