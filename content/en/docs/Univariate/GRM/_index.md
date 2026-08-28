@@ -170,6 +170,21 @@ my_priors <- c(prior(normal(0, 1),class = b,coef = age_year),
 We set chains = 4 to let the model to run 4 MCMC chains at the same time, and also saved as rda file, brms model structure:
 
 
+``` r
+model_grm <- brm(
+  BodyMass ~ age_year + I(age_year^2) + RightTarsus + SexEstimate + summer +minutes_s + avg_invert + group_size + (1 | gr(animal, cov = GRM_pd)) + (1 | BirdID) + (1 | BirthYear) + (1 | CatchYear) + (1 | Observer),
+  data    = data_final,
+  data2   = list(GRM_pd = GRM_pd),
+  family  = gaussian(),
+  prior   = my_priors,
+  warmup  = 1500,
+  iter    = 11500,
+  chains  = 4,
+  cores   = 4,
+  seed    = 123,
+  file    = "m_brms_GRM",
+  backend = "cmdstanr")
+```
 
 check the ESS, Rhat and check_hmc_diagnostics() to evaluate the animal model:
 

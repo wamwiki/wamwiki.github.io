@@ -106,7 +106,7 @@ my_priors <- c(prior(normal(0, 1),class = b,coef = age_year),
 
 We set chains = 4 to let the model to run 4 MCMC chains at the same time, and also saved as rda file, brms model structure:
 
-```{r,echo=FALSE}
+```{r model}
 model_grm <- brm(
   BodyMass ~ age_year + I(age_year^2) + RightTarsus + SexEstimate + summer +minutes_s + avg_invert + group_size + (1 | gr(animal, cov = GRM_pd)) + (1 | BirdID) + (1 | BirthYear) + (1 | CatchYear) + (1 | Observer),
   data    = data_final,
