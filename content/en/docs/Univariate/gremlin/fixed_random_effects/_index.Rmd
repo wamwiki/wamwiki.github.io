@@ -13,13 +13,13 @@ output:
 ```{r setup_fig, include=FALSE}
 knitr::opts_chunk$set(
   fig.path = "",
-  cache = TRUE
+  cache = FALSE
   )
 ```
 
 Here we will see how to add fixed effects and random effects to our linear animal model. We will also see how the addition of these effects can impact the calculation of heritability.
 
-We still use the gryphon dataset with `birth_weight` as the response, and MCMCglmm.
+We still use the gryphon dataset with `birth_weight` as the response, and gremlin.
 
 ```{r}
 phenotypicdata <- read.csv("data/gryphon.csv")
@@ -27,31 +27,30 @@ pedigreedata <- read.csv("data/gryphonped.csv")
 ```
 
 ```{r, message=FALSE, results='hide'}
-library(MCMCglmm)
+library(gremlin)
+library(nadiv)
 ```
 
-```{r, cache=TRUE}
-inverseAmatrix <- inverseA(pedigree = pedigreedata)$Ainv
+```{r}
+inverseAmatrix <- makeAinv(pedigree = pedigreedata)$Ainv
 ```
 
 
-Previously we run the simple model `model1.2` (not run again here):
+Previously we run the simple model `grMod1.2` (not run again here):
 
-```{r, echo=FALSE}
-set.seed(12345)
-```
 
-```{r model1.2, message=FALSE, results='hide', eval=FALSE}
-model1.2 <- MCMCglmm(birth_weight ~ 1, #Response and Fixed effect formula
+```{r grMod1.2, message=FALSE, results='hide', eval=FALSE}
+phenotypicdata$id <- as.factor(phenotypicdata$id)
+grMod1.2 <- gremlin(birth_weight ~ 1, #Response and Fixed effect formula
                    random = ~id, # Random effect formula
           ginverse = list(id = inverseAmatrix), # correlations among random effect levels
           data = phenotypicdata, # data set
-          burnin = 10000, nitt = 30000, thin = 20) # run the model for longer compare to the default
+          maxit = 10) # run the model for shorter compared to the default
 ```
 
 ## Adding fixed effects
 
-We will start by adding sex as a fixed effect. Why? Because sexes appear to be quite different in term of birth weight and our `model1.2` does not capture those differences. A model that accounts for important structures in the response variables will fit the data better and will tend to provide empirical parameter estimates that are more accurate, precise and better correspond to the conceptual parameter of interest. The addition of any fixed effect must be motivated by the scientific question or the need to control structures in the data though, think about it carefully.
+We will start by adding sex as a fixed effect. Why? Because sexes appear to be quite different in term of birth weight and our `grMod1.2` does not capture those differences. A model that accounts for important structures in the response variables will fit the data better and will tend to provide empirical parameter estimates that are more accurate, precise and better correspond to the conceptual parameter of interest. The addition of any fixed effect must be motivated by the scientific question or the need to control structures in the data though, think about it carefully.
 
 We can check that sexes are quite different in birth weight visually:
 
@@ -68,96 +67,38 @@ phenotypicdata$sexMF <- ifelse(phenotypicdata$sex==1, "M", "F")
 
 To add `sexMF` as a fixed effect to the model we add the column name in the line which contains the response variable, on the right-hand side of the tilde (`~`). Different fixed effects can be added using `+` signs. The `1` that was already there stands for the intercept. 
 
-```{r model1.3, message=FALSE, results='hide', cache=TRUE}
-model1.3 <- MCMCglmm(birth_weight ~ 1 + sexMF, #Response and Fixed effect formula
-                   random = ~id,
+```{r grMod1.3, message=FALSE, results='hide'}
+grMod1.3 <- gremlin(birth_weight ~ 1 + sexMF, #Response and Fixed effect formula
+                   random = ~ id,
           ginverse = list(id = inverseAmatrix), 
           data = phenotypicdata,
-          burnin = 10000, nitt = 30000, thin = 20) 
+          maxit = 10) 
 ```
 
 ```{r}
-summary(model1.3)
+summary(grMod1.3)
 ```
 
-The model summary shows a posterior mean difference of `r round(mean(model1.3$Sol[,"sexMFM"]), 3)` of males compared to females. You know the difference is about males because the name of the parameter in the summary ends with "M". Females are therefore the reference in this model.
+The model summary shows a mean difference of `r round(summary(grMod1.3)$coefficients[2, 1], 3)` of males compared to females. You know the difference is about males because the name of the parameter in the summary ends with "M". Females are therefore the reference in this model.
 
-Fixed effects are stored in the `$Sol` element of MCMCglmm models.
-We can visualise the trace and posterior distribution of the difference:
 
-```{r fixefsex}
-plot(model1.3$Sol[,"sexMFM"])
-```
-
-And we can compute the usual summary of the posterior distribution of the sex difference:
-
-```{r}
-median(model1.3$Sol[,"sexMFM"])
-posterior.mode(model1.3$Sol[,"sexMFM"])
-HPDinterval(model1.3$Sol[,"sexMFM"])
-```
-
-### "Testing" fixed effects
-
-We can also calculate posterior probabilities that are analogue to p-values using the proportion of posterior samples that are beyond a certain value.
-Thus, the posterior probability that the difference is not negative is:
-
-```{r}
-mean( model1.3$Sol[,"sexMFM"] >= 0 )
-```
-
-We will generally want to double that value to make it analogue to a two-sided p-value:
-
-```{r}
-2 * mean( model1.3$Sol[,"sexMFM"] >= 0 )
-```
-
-Here there are no samples above zero, so twice the posterior probability is estimated to exactly 0. Since we had only 1000 samples we are actually unable to estimate a probability less that 0.001. That is why we will want to report a posterior probability $p_{MCMC}$ of `<0.001`. That is what is reported in the summary of the model.
-
-Note that you can compute posterior probabilities testing the parameter estimate against arbitrary values. For instance, the  $p_{MCMC}$ that the sex difference is above $-2$ is:
-
-```{r}
-2 * mean( model1.3$Sol[,"sexMFM"] >= -2 )
-```
-
-and the $p_{MCMC}$ that the sex difference is below $-2.5$ is:
-
-```{r}
-2 * mean( model1.3$Sol[,"sexMFM"] <= -2.5 )
-```
 
 ### Adding a continuous fixed effect
 
 There are not many variables to experiment with in this dataset, but let's say we want to include cohort as a fixed effect, for instance because we want to account for a linear change in the response through time.
 
-Let's just re-scale cohort to avoid changing the intercept and perhaps to help a bit the estimation algorithm (it is often easier to have fixed effects on similar scales) and interpretation (it may be easier to see what is a big or small effect when fixed effects are standardized, although it is by no mean necessary).
+Let's just re-scale cohort to avoid changing the intercept and perhaps to help a bit the estimation algorithm (it is often easier to have fixed effects on similar scales) and interpretation (it may be easier to see what is a big or small effect when fixed effects are standardized, although it is by no means necessary).
 
-```{r model1.4, message=FALSE, results='hide', cache=TRUE}
-model1.4 <- MCMCglmm(birth_weight ~ 1 + sexMF + scale(cohort), #Response and Fixed effect formula
-                   random = ~id, 
+```{r grMod1.4, message=FALSE, results='hide'}
+grMod1.4 <- gremlin(birth_weight ~ 1 + sexMF + scale(cohort), #Response and Fixed effect formula
+                   random = ~ id, 
           ginverse = list(id = inverseAmatrix),
-          data = phenotypicdata,
-          burnin = 10000, nitt = 30000, thin = 20) 
+          data = phenotypicdata) 
 ```
 
 
 ```{r}
-summary(model1.4)
-```
-
-As previously we can plot the trace and posterior distribution of the effect of cohort, compute its posterior mean, median, mode, credible interval, and $p_{MCMC}$
-
-```{r cohortfixef}
-plot(model1.4$Sol[,"scale(cohort)"])
-```
-
-
-```{r}
-mean(model1.4$Sol[,"scale(cohort)"])
-median(model1.4$Sol[,"scale(cohort)"])
-posterior.mode(model1.4$Sol[,"scale(cohort)"])
-HPDinterval(model1.4$Sol[,"scale(cohort)"])
-2*mean(model1.4$Sol[,"scale(cohort)"]>0)
+summary(grMod1.4)
 ```
 
 
@@ -167,82 +108,116 @@ We will often want to include random effects in addition to the additive genetic
 
 For instance, it is very common to include the mother identity as a random effect, as individuals born from the same mother may share an environment in early life (e.g., nest or food provisioning).
 
-To include mother as a random effect we write the variable name in the argument `random`, after `ìd +`. We do not need to change the argument `ginverse` if we assume that the levels of the additional random effect are uncorrelated (this is often not strictly true, and it can be interesting to model the genetic correlations between maternal levels, but this is a more advanced topic.)
+To include mother as a random effect we first need to ensure we convert the integer codes to a factor, then write the variable name in the argument `random`, after `ìd +`. We do not need to change the argument `ginverse` if we assume that the levels of the additional random effect are uncorrelated (this is often not strictly true, and it can be interesting to model the genetic correlations between maternal levels, but this is a more advanced topic.)
 
-```{r model1.5, message=FALSE, results='hide', cache=TRUE}
-model1.5 <- MCMCglmm(birth_weight ~ 1 + sexMF + scale(cohort), 
-                   random = ~id + mother, # Random effect formula
+```{r grMod1.5, message=FALSE, results='hide'}
+phenotypicdata$motherFac <- as.factor(phenotypicdata$mother) 
+grMod1.5 <- gremlin(birth_weight ~ 1 + sexMF + scale(cohort), 
+                   random = ~ id + motherFac, # Random effect formula
           ginverse = list(id = inverseAmatrix),
-          data = phenotypicdata, 
-          burnin = 10000, nitt = 30000, thin = 20) 
+          data = phenotypicdata) 
 ```
 
 ```{r}
-summary(model1.5)
+summary(grMod1.5)
 ```
 
-Posterior distributions of random effect variance parameters are stored in the `$VCV` element of MCMCglmm models.
+### Testing variance components
 
-We can visualise the trace and posterior distribution of the variance associated with mother identity as:
+We can evaluate whether the maternal environmental effect variance (`motherFac`) is significantly different from zero. The standard errors of the variance components are only approximations under an assumption of large sample theory so we should investigate the change in log-likelihood from including maternal effects. In other words, does a model with maternal effects (`logLik(grMod1.5)`=`r logLik(grMod1.5)[1]`) significantly improve the log-likelihood of a model without these effects (`logLik(grMod1.4)`=`r logLik(grMod1.4)[1]`)? 
 
-```{r mothervar}
-plot(model1.5$VCV[,"mother"])
+When the data and fixed effects are the same between two models, we can compare the REML log-likelihoods with a likelihood ratio test (LRT), which is performed by the `anova` function:
+
+```{r LRT}
+anova(grMod1.4, grMod1.5)
 ```
 
-And we can compute summaries of the posterior distribution:
+Note that because we are testing a variance against a value at the boundary of the allowable values (parameter space, i.e., zero and REML variances are constrained from being less than or equal 0.0), we need to halve the p-value reported above to get the correct value (see Wilson et al. 2010 An ecologist's guide to the animal model. J. Anim. Ecol. [doi: 10.1111/j.1365-2656.2009.01639.x](https://besjournals.onlinelibrary.wiley.com/doi/full/10.1111/j.1365-2656.2009.01639.x))  
 
-```{r}
-mean(model1.5$VCV[,"mother"])
-median(model1.5$VCV[,"mother"])
-posterior.mode(model1.5$VCV[,"mother"])
-HPDinterval(model1.5$VCV[,"mother"])
+```{r LRT_boundaryCorrect}
+0.5 * anova(grMod1.4, grMod1.5)[2, "Pr(>Chisq)"]
 ```
 
-Note that it is not really meaningful to compute $p_MCMC$ to test a variance in greater than zero, as the parameter is constrained to be greater than zero, and the probability will always be 1.
-It is possible to compute $p_MCMC$ for other values though, for instance, we can estimate the probability that the variance associated with mother identity is greater than 1.5:
+Alternatively, it is possible to test the significance of whether variance components are different from other values than just zero. For instance, we can estimate the p-value for the change in log-likelihoods associated with the estimated variance in mother identity being different than 1.5.
 
-```{r}
-2*mean(model1.5$VCV[,"mother"] >= 1.5 )
+Whereas in the last LRT we made an implicit assumption that the reduced model (`grMod1.4`) was analagous to a model where the maternal variance equals zero (because the term was not included in the model), next we have to specify a model where we calculate the likelihood for when maternal variance=1.5. We do this by setting a fixed constraint on that term in the model. We will use the `Gstart` and `Gcon` arguments to `gremlin` to accomplish this.
+
+We code this by first creating a list of constraints on the G-structure (the non-residual variances or covariances) of the current model. Then, we can specify the G element we want fix using the "F" code.
+
+```{r make_constraintLst}
+Gcon_in <- lapply(grMod1.5$grMod$conv, FUN = as.matrix)
+Gcon_in
+
+# drop the residual and change G.motherFac to "F"
+Gcon_in <- Gcon_in[1:2]
+Gcon_in[2] <- "F"
+Gcon_in
 ```
 
-or we can estimate if the variance associated with mother identity is less than the additive genetic variance:
+To specify the numeric value to which we want to constrain maternal variance, we create a list of matrices for the starting parameter values of the G-structure. We will use values for the additive genetic and residual variances close to their estimates from `grMod1.5`.
 
-```{r}
-2*mean(model1.5$VCV[,"mother"] > model1.5$VCV[,"id"] )
+```{r make_start}
+Gst_in <- list(matrix(2.5), matrix(1.5))
+Gst_in
 ```
 
-(here the additive genetic variance is almost certainly greater than the mother variance.)
+Now, we provide these to the model call
 
+```{r fix_mom, message=FALSE, results='hide'}
+grMod1.5fxd <- gremlin(birth_weight ~ 1 + sexMF + scale(cohort), 
+                   random = ~ id + motherFac, # Random effect formula
+          ginverse = list(id = inverseAmatrix),
+          data = phenotypicdata,
+          Gstart = Gst_in,
+          Gcon = Gcon_in) 
+
+summary(grMod1.5fxd)          
+```
+
+From the model summary, we can see a new column in the `(co)variance parameters` section that indicates a fixed constraint on maternal effect variance and the parameter value represents the value at which we fixed this variance. Further, there is an NA for the standard error. Since this variance component was fixed and not part of the optimization procedure to maximize the log-likelihood there is no sampling variance from which to estimate a standard error.
+
+To test for a significant difference between our original estimate of maternal variance (`grMod1.5`=`r round(summary(grMod1.5)$varcompSummary["G.motherFac", "Estimate"], 4)`) and 1.5 we can again use the `anova` function.
+
+```{r test1.5}
+anova(grMod1.5, grMod1.5fxd)
+```
+
+So we have strong evidence for the maternal effect variance being greater than zero, but very little evidence this variance is different from 1.5.
 
 We can add a third random effect, for instance cohort (yes, we can include cohort both as fixed and random effect):
 
 
-```{r model1.6, message=FALSE, results='hide', cache=TRUE}
-model1.6 <- MCMCglmm(birth_weight ~ 1 + sexMF + scale(cohort), 
-                   random = ~id + mother + cohort, # Random effect formula
+```{r model1.6, message=FALSE, results='hide'}
+phenotypicdata$cohortFac <- as.factor(phenotypicdata$cohort)
+
+grMod1.6 <- gremlin(birth_weight ~ 1 + sexMF + scale(cohort), 
+                   random = ~ id + motherFac + cohortFac, # Random effect formula
           ginverse = list(id = inverseAmatrix),
-          data = phenotypicdata, 
-          burnin = 10000, nitt = 30000, thin = 20) 
+          data = phenotypicdata) 
+
+summary(grMod1.6)          
 ```
 
 
 
 ## Computing heritability without accounting for fixed effects
 
-We could compute heritability as the ratio of additive genetic variance over the sum of random effect and residual variance. In the case of model1.6 that would be $h^2 = V_A / (V_A + V_M + V_C + V_R) $
+We could compute heritability as the ratio of additive genetic variance over the sum of random effect and residual variance. In the case of grMod1.6 that would be $h^2 = V_A / (V_A + V_M + V_C + V_R) $
 
-```{r}
-h2_nofixef <- model1.6$VCV[,"id"] / (model1.6$VCV[,"id"] + model1.6$VCV[,"mother"] + model1.6$VCV[,"cohort"] + model1.6$VCV[,"units"])
+However, when calculating the heritability as a function of these variance components we want to incorporate the uncertainty in each variance component estimate into the final heritability standard error. This is not as straightforward as a simple addition or multiplication of individual standard errors but requires the _delta method_ which is way to approximate the standard error of a function of estimated parameters. 
+
+The `gremlin` function `deltaSE()` implements this method for us. The function has a few different ways to imput your function of variance components (see the help documentation for more information) and the format below uses the gremlin names for variance components in a formula
+
+```{r deltaSE_h2}
+(h2_nofixef <- deltaSE(h2 ~ G.id / (G.id + G.motherFac + G.cohortFac + ResVar1),
+  grMod1.6))
 ```
 
-```{r}
-median(h2_nofixef)
-HPDinterval(h2_nofixef)
-```
 
-Note that the estimate of heritability is a bit less than what we estimated from model1.2. This is likely because the random effect `mother` corrects for some similarity between siblings that was conflated with additive genetic variance in the that did not account for mother identity.
+Note that the estimate of heritability is a bit less than what we estimated from grMod1.2. This is likely because the random effect `motherFac` corrects for some similarity between siblings that was conflated with additive genetic variance in the trait that did not account for mother identity.
 
 However, this calculation of heritability may not be satisfactory as it leaves out some variance that is accounted in the fixed effects.
+
 
 ## Computing heritability while accounting for fixed effects
 
@@ -250,10 +225,14 @@ Often we will want to include the variance accounted in the fixed effect back in
 
 The variance due to fixed effect can be computed as the variance in model predictions (without accounting for random effects). 
 Those predictions can be computed as the matrix product of predictors by parameter estimates.
-In MCMCglmm it can be done like this:
+
+In `gremlin` it can be done like this:
 
 ```{r}
-predictions1.6 <- model1.6$X %*% t(model1.6$Sol)
+X <- grMod1.6$grMod$modMats$X
+fxdVec <- summary(grMod1.6)$coefficients[, "Estimate", drop = FALSE]
+predictions1.6 <- X %*% fxdVec
+
 ```
 
 This object contains one row for each data point and one column for each posterior sample.
@@ -262,20 +241,18 @@ This object contains one row for each data point and one column for each posteri
 dim(predictions1.6)
 ```
 
-For each posterior sample we can compute the variance:
+The variance explained by fixed effects is the variance of the predictions:
 
 ```{r}
-fixef_variance <- apply(predictions1.6, MARGIN = 2, var)
+fixef_variance <- var(as.vector(predictions1.6))
 ```
 
 We can then plug it in the calculation of heritability:
 
 ```{r}
-h2_fixef <- model1.6$VCV[,"id"] / (model1.6$VCV[,"id"] + model1.6$VCV[,"mother"] + model1.6$VCV[,"cohort"] + model1.6$VCV[,"units"] + fixef_variance)
-```
-
-```{r}
-median(h2_fixef)
+(h2_fixef <- deltaSE(h2 ~ G.id /
+                 (G.id + G.motherFac + G.cohortFac + ResVar1 + fixef_variance),
+  grMod1.6))
 ```
 
 

@@ -68,6 +68,7 @@ Now we can fit the model of `birth_weight` to estimate three parameters:
 
 
 ```{r, cache=TRUE, message=FALSE, results='hide'}
+phenotypicdata$id <- as.factor(phenotypicdata$id)
 grMod1.1 <- gremlin(birth_weight ~ 1, #Response and Fixed effect formula
                    random = ~id, # Random effect formula
           ginverse = list(id = inverseAmatrix), # correlations among random effect levels (here breeding values)
