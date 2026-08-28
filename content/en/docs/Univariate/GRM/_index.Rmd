@@ -35,7 +35,7 @@ There are many methods and tools (e.g., PLINK, NgsRelate\* or R packages like 'q
 #system("gcta64 or gcta64.exe --bfile filterd.final.autosome.maf0.05_bodymass_h2_gwas_50ind_10k_WAMBAM  --make-grm --autosome-num 29 --out filterd.final.autosome.maf0.05.36ind.10k.WAMBAM")
 ```
 
-There are 3 output files of GCTA: grm.bin, grm.id, grm.N.bin, you need to put them under the same directory
+There are 3 output files from GCTA: grm.bin, grm.id, grm.N.bin, you need to put them under the same directory
 
 # Model fitting
 
