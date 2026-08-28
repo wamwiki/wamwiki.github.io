@@ -66,13 +66,9 @@ Now we can fit the model of `birth_weight` to estimate three parameters:
 * a residual variance
 * an intercept
 
-```{r, echo=FALSE}
-set.seed(12345)
-```
-
 
 ```{r, cache=TRUE, message=FALSE, results='hide'}
-model1.1 <- gremlin(birth_weight ~ 1, #Response and Fixed effect formula
+grMod1.1 <- gremlin(birth_weight ~ 1, #Response and Fixed effect formula
                    random = ~id, # Random effect formula
           ginverse = list(id = inverseAmatrix), # correlations among random effect levels (here breeding values)
           data = phenotypicdata)# data set
@@ -82,22 +78,22 @@ Note the use of the argument `ginverse` to link the elements of the relatedness 
 
 Let's look at the results.
 
-It is always a good idea to ensure the REML has converged on the maximum likelihood. This is printed to the screen, but we can also retrieve whether or not the model has converged from the model object `model1.1`
+It is always a good idea to ensure the REML has converged on the maximum likelihood. This is printed to the screen, but we can also retrieve whether or not the model has converged from the model object `grMod1.1`
 
 ```{r, cache = FALSE, message = FALSE}
-ccFun(model1.1)  #<-- TRUE if all convergence checks pass
+ccFun(grMod1.1)  #<-- TRUE if all convergence checks pass
 ```
 
 In the event the model did not converge, we can start up the where it ended and then run more iterations. Note, in our model above we do not need to run it for more iterations because it converged before the maximum number of iterations (20 by default). For the purposes of illustration, here is how you would continue the model using the `update` function.
 
 ```{r, cache = FALSE, message = FALSE, results='hide'}
-model1.2 <- update(model1.1, maxit = 50)
+grMod1.2 <- update(grMod1.1, maxit = 50)
 ```
 
 Now we can look at the model summary.
 
 ```{r}
-summary(model1.2)
+summary(grMod1.2)
 ```
 
 Among other things, the summary gives the estimate and standard errors for the intercept, the residual variance and the additive genetic variance. 
