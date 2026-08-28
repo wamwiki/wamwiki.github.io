@@ -1,0 +1,105 @@
+---
+title: "Univariate animal model using gremlin"
+linkTitle: "gremlin"
+weight: 5
+description: >
+  Univariate animal model using gremlin.
+output: 
+  html_document: 
+    keep_md: yes
+---
+ 
+```{r setup_fig, include=FALSE}
+knitr::opts_chunk$set(
+  fig.path = "",
+  cache = TRUE
+  )
+```
+
+# Example data
+
+We will use the simulated gryphon dataset ([download zip file](/docs/data/gryphons.zip) ).
+
+We need to load both the phenotypic data `gryphon.csv` and the pedigree `gryphonped.csv`.
+
+```{r}
+phenotypicdata <- read.csv("data/gryphon.csv")
+pedigreedata <- read.csv("data/gryphonped.csv")
+```
+
+The phenotypic data look like this:
+
+```{r}
+head(phenotypicdata)
+```
+
+We will use `birth_weight` as a response variable.
+
+And the pedigree looks like this:
+
+```{r}
+head(pedigreedata)
+tail(pedigreedata)
+```
+
+
+# Simplest animal model
+
+Here is the simplest implementation of an animal model in MCMCglmm. 
+
+First, we load the package and the nadiv package for relatedness matrices:
+
+```{r, message=FALSE, results='hide'}
+library(gremlin)
+library(nadiv)
+```
+
+Second, convert the pedigree to an inverse-relatedness matrix. If the pedigree is properly formatted this is easily done with `nadiv::makeAinv`.
+
+```{r, cache=TRUE}
+inverseAmatrix <- makeAinv(pedigree = pedigreedata)$Ainv
+```
+
+Now we can fit the model of `birth_weight` to estimate three parameters:
+
+* an additive genetic variance (corresponding to the `id` column) 
+* a residual variance
+* an intercept
+
+```{r, echo=FALSE}
+set.seed(12345)
+```
+
+
+```{r, cache=TRUE, message=FALSE, results='hide'}
+model1.1 <- gremlin(birth_weight ~ 1, #Response and Fixed effect formula
+                   random = ~id, # Random effect formula
+          ginverse = list(id = inverseAmatrix), # correlations among random effect levels (here breeding values)
+          data = phenotypicdata)# data set
+```
+
+Note the use of the argument `ginverse` to link the elements of the relatedness matrix to the individual identity in the phenotypic data.
+
+Let's look at the results.
+
+It is always a good idea to ensure the REML has converged on the maximum likelihood. This is printed to the screen, but we can also retrieve whether or not the model has converged from the model object `model1.1`
+
+```{r, cache = FALSE, message = FALSE}
+ccFun(model1.1)  #<-- TRUE if all convergence checks pass
+```
+
+In the event the model did not converge, we can start up the where it ended and then run more iterations. Note, in our model above we do not need to run it for more iterations because it converged before the maximum number of iterations (20 by default). For the purposes of illustration, here is how you would continue the model using the `update` function.
+
+```{r, cache = FALSE, message = FALSE, results='hide'}
+model1.2 <- update(model1.1, maxit = 50)
+```
+
+Now we can look at the model summary.
+
+```{r}
+summary(model1.2)
+```
+
+Among other things, the summary gives the estimate and standard errors for the intercept, the residual variance and the additive genetic variance. 
+
+
