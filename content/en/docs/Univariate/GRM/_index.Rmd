@@ -37,6 +37,8 @@ There are many methods and tools (e.g., PLINK, NgsRelate\* or R packages like 'q
 
 There are 3 output files of GCTA: grm.bin, grm.id, grm.N.bin, you need to put them under the same directory
 
+# Model fitting
+
 Here, we fit the data into animal model in brms
 
 First, you need to install and load all the packages, you can check brms usage tutorial to know how to setup first
