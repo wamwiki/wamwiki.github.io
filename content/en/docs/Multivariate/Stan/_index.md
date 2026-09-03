@@ -177,3 +177,8 @@ mcmc_areas(post, pars = pars, prob = 0.95) +
 ```
 
 ![](_index_files/figure-html/unnamed-chunk-9-2.png)<!-- -->
+
+___
+
+Written by: Jordan S. Martin
+

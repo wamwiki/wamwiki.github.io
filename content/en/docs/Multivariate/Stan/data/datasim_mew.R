@@ -1,6 +1,5 @@
-setwd("C:/Dropbox/WAMBAM/hackathon 2026/mews")
-
 #sim pedigree
+set.seed(9)
 library(pedAgree)
 ped = pedAgree::simulate_pedigree(years = 10)
 ped = ped$pedigree

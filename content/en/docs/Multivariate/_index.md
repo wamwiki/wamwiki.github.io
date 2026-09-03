@@ -1,6 +1,6 @@
 ---
 title: "Simple multivariate animal model"
-linkTitle: "Simple univariate animal model"
+linkTitle: "Simple multivariate animal model"
 author: "Jordan Scott Martin"
 weight: 4
 math: true
@@ -49,7 +49,7 @@ $$\begin{bmatrix}
 \end{bmatrix}
 \sim N(\mathbf{0},\mathbf{\Sigma} \otimes \mathbf{I}) $$
 
-The Kronecker product $\otimes$ of $\mathbf{G}$ with the relatedness matrix $\mathbf{A}$ accounts for the expected similarity in additive genetic values among individuals. Residual environmental effects are assumed to be independently distributed, which is denoted by the identity matrix $\mathbf{I}$. There are, of course, many further directions to take the model.
+The Kronecker product $\otimes$ of $\mathbf{G}$ with the relatedness matrix $\mathbf{A}$ accounts for the expected similarity in additive genetic values among individuals. Residual environmental effects are assumed to be independently distributed, which is denoted by the identity matrix $\mathbf{I}$. There are, of course, many further directions to take the model, such as the inclusion of additional fixed and random effects.
 
 ___
 
