@@ -1,6 +1,6 @@
 ---
 title: "Simple multivariate animal model"
-linkTitle: "Simple univariate animal model"
+linkTitle: "Simple multivariate animal model"
 author: "Jordan Scott Martin"
 weight: 4
 math: true
