@@ -20,7 +20,7 @@ WAMBAM is a small international workshop that happens (roughly) every two years 
 
 {{% blocks/lead %}}
 
-**The next meeting is scheduled to happen in France in August 2026. Find information [here](/wambam/_wambam26info).**
+**The next meeting is not yet scheduled. Stay tuned.**
 
 {{% /blocks/lead %}}
 
@@ -40,7 +40,7 @@ Birders highlight: Pied flycatcher
 Non-birder wildlife highlight: Pine marten + dramatic thunderstorms
 
 <figure>
-	<img src="wambam2023.jpg" style="width:40%">
+	<img src="wambam2026.jpg" style="width:40%">
 	<figcaption> Participants of WAMBAM 2023.
 </figure> 
 {{% /alert %}}
@@ -57,7 +57,7 @@ Birders highlight: Maybe stonechat
 Non-birder wildlife highlight: Dartmoor pony (?)
 
 <figure>
-	<img src="wambam2026.jpg" style="width:40%">
+	<img src="wambam2023.jpg" style="width:40%">
 	<figcaption> Participants of WAMBAM 2026.
 </figure> 
 {{% /alert %}}
