@@ -41,7 +41,7 @@ Non-birder wildlife highlight: Pine marten + dramatic thunderstorms
 
 <figure>
 	<img src="wambam2026.jpg" style="width:40%">
-	<figcaption> Participants of WAMBAM 2023.
+	<figcaption> Participants of WAMBAM 2026.
 </figure> 
 {{% /alert %}}
 
