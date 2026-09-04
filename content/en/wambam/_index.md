@@ -58,7 +58,7 @@ Non-birder wildlife highlight: Dartmoor pony (?)
 
 <figure>
 	<img src="wambam2023.jpg" style="width:40%">
-	<figcaption> Participants of WAMBAM 2026.
+	<figcaption> Participants of WAMBAM 2023.
 </figure> 
 {{% /alert %}}
 
