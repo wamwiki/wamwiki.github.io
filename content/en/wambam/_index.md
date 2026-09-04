@@ -28,6 +28,23 @@ WAMBAM is a small international workshop that happens (roughly) every two years 
 ## **Past meetings**
 {{% /blocks/lead %}}
 
+
+{{% alert title="WAMBAM 8 - Chizé, France, August 2026" color="primary" %}}
+
+The meeting was organized by Timothée Bonnet (CNRS, at Centre d’Etudes Biologiques de Chizé). Following four months of drought and extreme temperatures, the heat broke in time for 30 very hot talks. Topics included new methods, adaptation to environmental change, inbreeding, quantitative genomics, and, once again, what the hell fitness is. We also had in-depth discussions about what a population is, ways of integrating genomic data into quantitative genetic research and whether classical (Victorian?) quantitative genetics needs a new marketing scheme.
+
+Day trip: Guided walk through the Chizé Forest
+
+Birders highlight: Pied flycatcher
+
+Non-birder wildlife highlight: Pine marten + dramatic thunderstorms
+
+<figure>
+	<img src="wambam2023.jpg" style="width:40%">
+	<figcaption> Participants of WAMBAM 2023.
+</figure> 
+{{% /alert %}}
+
 {{% alert title="WAMBAM 7 - Okehampton, England, September 2023" color="primary" %}}
 The meeting was organized by Simon Evans and Alastair Wilson (both University of Exeter).
 After having been postponed for a few years due to the COVID-19 pandemic it was very exciting meeting up again. Sadly COVID was still in the air and several people missed out!
@@ -40,8 +57,8 @@ Birders highlight: Maybe stonechat
 Non-birder wildlife highlight: Dartmoor pony (?)
 
 <figure>
-	<img src="wambam2023.jpg" style="width:40%">
-	<figcaption> Participants of WAMBAM 2023.
+	<img src="wambam2026.jpg" style="width:40%">
+	<figcaption> Participants of WAMBAM 2026.
 </figure> 
 {{% /alert %}}
 
