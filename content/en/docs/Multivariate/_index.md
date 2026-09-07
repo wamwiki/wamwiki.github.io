@@ -2,7 +2,7 @@
 title: "Simple multivariate animal model"
 linkTitle: "Simple multivariate animal model"
 author: "Jordan Scott Martin"
-weight: 4
+weight: 5
 math: true
 description: >
   Fitting a simple multivariate model in R.
@@ -23,14 +23,13 @@ This page demonstrates how to estimate simple multivariate linear animal models 
 The multivariate animal extends the univariate animal model to account for genetic and environmental associations among multiple traits. In the simplest case, the model predicts $t$ phenotypic trait values $z_1,...,z_t$ for individual $i$ as a function of global intercepts $\mu_1,...,\mu_t$ and multivariate normal additive genetic $a_1,...,a_t$ and residual environmental  $e_1,...,e_t$ values.
 
 $$\begin{bmatrix}
-z_{1i} \\
-\vdots \\
+z_{1i} \\\
+\vdots \\\
 z_{ti}
-\end{bmatrix}
-=
+\end{bmatrix} =
 \begin{bmatrix}
-\mu_1 + a_{1i} + e_{1i} \\
-\vdots \\
+\mu_1 + a_{1i} + e_{1i} \\\
+\vdots \\\
 \mu_t + a_{ti} + e_{ti}
 \end{bmatrix}$$
 

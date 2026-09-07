@@ -23,8 +23,8 @@ set_cmdstan_path("...") #CmdStan installation
 
 # Example data
 
-<img style="float: right; width: 200px; margin: 0 0 15px 15px;
-"src="mew.png">
+![mew](/images/mew.png)
+
 
 We'll use a simulated dataset on 600 wild mews ( [download zip file](data/mews.zip) ). We want to estimate both the genetic and environmental variances, (co)variances, and correlations among three phenotypic measures: body mass, tail length, and shyness, proxied by time to approach an arbok predator model. 
 
