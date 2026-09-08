@@ -2,7 +2,7 @@
 title: "Simple multivariate animal model"
 linkTitle: "Simple multivariate animal model"
 author: "Jordan Scott Martin"
-weight: 4
+weight: 5
 math: true
 description: >
   Fitting a simple multivariate model in R.
@@ -26,8 +26,7 @@ $$\begin{bmatrix}
 z_{1i} \\
 \vdots \\
 z_{ti}
-\end{bmatrix}
-=
+\end{bmatrix} =
 \begin{bmatrix}
 \mu_1 + a_{1i} + e_{1i} \\
 \vdots \\
