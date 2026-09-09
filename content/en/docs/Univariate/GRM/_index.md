@@ -23,16 +23,49 @@ dataset and GRM files can be downloaded from the [Wamwiki github](https://github
 - No pedigree information in your study
 - ...
 
-> Before go to create a GRM, it is better to check the population structure by simply checking with a PCA plot.
+> Before go to create a GRM, it is better to check the population structure by simply checking with a PCA plot. Or you can check the Fst of your dataset.
 
 # The method to generate GRM
 
+> Preparation - download and setup GCTA
+
 There are many methods and tools (e.g., PLINK, NgsRelate\* or R packages like 'qgg') to estimate the relatedness between individuals and generate a GRM, here is an example by using GCTA -grm flag. Note: NgsRelate accepts genotype likelihood input and vcf input
+
+There is a flowchart to show the input file types for different methods to get a GRM
+
+<img src="figures/grm_input_pipeline.png" alt="" width="100%" />
+
+GCTA is a tool developed to study quantitative genetics based on genomic data, there is a function (--make-grm) which could estimate genetic relatedness from SNPs. 
+
+GCTA comes as a pre-compiled executable from the Yang Lab, You need to download the executable files on [GCTA website](https://yanglab.westlake.edu.cn/software/gcta/#Download), with builds for Linux, macOS, and Windows. Unzip it, inside the folder is the executable: gcta64 on Linux/Mac, gcta64.exe on Windows.
+
+Here is the explanation of `--make-grm` function from GCTA website: Estimate the genetic relationship matrix (GRM) between pairs of individuals from a set of SNPs and save the lower triangle elements of the GRM to binary files.
+
+For R (or the terminal) to find it when you just type gcta64, either add the folder containing it to your system 'PATH', or give the full path to the executable in your command (e.g. "/path/to/gcta64 --bfile ..."). If you skip this, you'll get a "command not found" error.
+
+> Laptop, workstation, or HPC?
+
+For a relative small dataset (10k SNPs, ~1000 individuals) a personal laptop is completely fine, and this will finish in minutes. Here, we only have 36 individuals, this will complete in seconds.
+
+But you need a workstation or HPC once you get into the 1,000 to 10,000 of individuals and 100,000 to 1,000,000 of SNPs, where the matrix becomes many gigabytes (that's also when GCTA's --make-grm-part chunking becomes useful). For this step in the tutorial, no special hardware is needed.
+
+If you want to check the details of making a GRM with GCTA, you can check [here](https://yanglab.westlake.edu.cn/software/gcta/#MakingaGRM).
 
 
 ``` r
-#system("gcta64 or gcta64.exe --bfile filterd.final.autosome.maf0.05_bodymass_h2_gwas_50ind_10k_WAMBAM  --make-grm --autosome-num 29 --out filterd.final.autosome.maf0.05.36ind.10k.WAMBAM")
+# You could run GCTA in R by using system() function or run the command line in terminal
+
+#system("/your/path/to/gcta64 or gcta64.exe --bfile filterd.final.autosome.maf0.05_bodymass_h2_gwas_50ind_10k_WAMBAM  --make-grm --autosome-num 29 --out filterd.final.autosome.maf0.05.36ind.10k.WAMBAM")
 ```
+Notes:
+
+--bfile `your PLINK binary files`, this isn't one file but a trio that share the same prefix: a .bed file (the genotype calls in compact binary form), a .bim file (one row per SNP: chromosome, ID, position, alleles), and a .fam file (one row per individual: IDs, sex, phenotype). You supply only the shared prefix with no extension, and GCTA finds all three
+
+--make-grm, compute the Genetic Relationship Matrix flag
+
+--autosome-num `29`, tells GCTA how many pairs of autosomes the species has. This matters because GCTA defaults to humans (22 autosomes), so for any non-human species you must set it explicitly or the autosome selection will be wrong. 29 indicates the seychelles warbler with 29 autosome pairs
+
+--out `prefix`, the prefix for all output files. Everything GCTA writes here with the prefix you provided
 
 There are 3 output files from GCTA: grm.bin, grm.id, grm.N.bin, you need to put them under the same directory
 
@@ -63,7 +96,7 @@ load the dataset, GRM
 
 ``` r
 dataset <- read.csv("dataset_bodycondition_sw.csv")
-grm.data <- read_grm("filterd.final.autosome.maf0.05.36ind.10k.WAMBAM.grm")
+grm.data <- genio::read_grm("filterd.final.autosome.maf0.05.36ind.10k.WAMBAM.grm")
 ```
 
 ```
@@ -79,7 +112,29 @@ grm.data <- read_grm("filterd.final.autosome.maf0.05.36ind.10k.WAMBAM.grm")
 ```
 
 ``` r
+#Check the number of SNPs used for GRM
+#So there's some missing data (SNPs that didn't match in pairs) in the dataset, but not much to worry about. The counts range from 9,312 to 9,970 SNPs per pair, meaning every relatedness estimate is built on at least ~9,300 markers.
+
+summary(grm.data$M[lower.tri(grm.data$M)])
+```
+
+```
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##    9312    9769    9852    9809    9894    9947
+```
+
+``` r
+#Matrix::nearPD() finds the nearest positive-definite matrix to the one you give it. animal models use the GRM as a covariance matrix, which must be positive definite to be both statistically valid and computationally usable, the model equations require inverting and factoring the matrix, which fails if it's singular or has negative eigenvalues
+#It is not always necessary to force positive definite your GRM, nearPD() is the safety net that guarantees the matrix satisfies that requirement
 GRM_pd <- as.matrix(Matrix::nearPD(grm.data$kinship)$mat)
+
+# You can check your GRM before positive definite step
+# Smallest eigenvalue of the raw GRM: > 0 means already positive definite, then you can use your raw GRM
+min(eigen(grm.data$kinship, symmetric = TRUE, only.values = TRUE)$values)
+```
+
+```
+## [1] -0.009069228
 ```
 
 Check if the dataset and GRM with the same individual
