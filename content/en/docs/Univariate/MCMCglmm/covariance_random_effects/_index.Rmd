@@ -1,0 +1,132 @@
+---
+title: "Adding a covariance between random effects (Indirect genetic effects)"
+linkTitle: "Covariance between random effects "
+weight: 10
+description: >
+  Adding a covariance between random effects to fit indirect genetic effects.
+output: 
+  html_document: 
+    keep_md: yes
+---
+
+
+```{r setup_fig, include=FALSE}
+knitr::opts_chunk$set(
+  fig.path = "",
+  cache = TRUE
+  )
+```
+
+Here we will see how to add a covariance between two random effects in our linear animal model. This technique has been used to estimate the genetic covariance between direct genetic effect and maternal genetic effects, which is needed to estimate total genetic variance when parents and offspring interact (see for instance [Thomson et al. 2017.](https://doi.org/10.1038/NGEO1057))
+
+We still use the gryphon dataset with `birth_weight` as the response, and MCMCglmm.
+
+```{r, echo=FALSE}
+phenotypicdata <- read.csv("../../data/gryphon.csv")
+pedigreedata <- read.csv("../../data/gryphonped.csv")
+```
+
+```{r, eval=FALSE}
+phenotypicdata <- read.csv("data/gryphon.csv")
+pedigreedata <- read.csv("data/gryphonped.csv")
+```
+
+```{r, message=FALSE, results='hide'}
+library(MCMCglmm)
+```
+
+```{r, cache=TRUE}
+inverseAmatrix <- inverseA(pedigree = pedigreedata)$Ainv
+```
+
+
+```{r, echo=FALSE}
+set.seed(12345)
+```
+
+We create two new, identical, columns corresponding to the identifiers of the mothers. 
+
+```{r}
+phenotypicdata$damE <- phenotypicdata$damG <- pedigreedata$mother[match(phenotypicdata$id,pedigreedata$id)]
+```
+
+The column `damE` will be used to fit environmental maternal effects and the column `damG` will be used to fit genetic maternal effects.
+
+We first fit an animal model with environmental and genetic maternal effects in addition to direct genetic effects, but without covariance.
+
+```{r}
+prior_3RE_ParamExp <- list(
+  G = list(G1 = list(V = 1, nu = 1, alpha.mu=0, alpha.V=1000),
+           G2 = list(V = 1, nu = 1, alpha.mu=0, alpha.V=1000),
+           G3 = list(V = 1, nu = 1, alpha.mu=0, alpha.V=1000)),
+  R = list(V = 1, nu = 1)
+)
+```
+
+
+```{r, cache=TRUE, message=FALSE, results='hide'}
+model_maternalGE_noCov <- MCMCglmm(birth_weight ~ 1,
+                   random = ~id + damG + damE, 
+          ginverse = list(id = inverseAmatrix, damG = inverseAmatrix), 
+          prior = prior_3RE_ParamExp,
+          data = phenotypicdata,
+          nitt = 130000, burnin = 30000, thin = 100)
+```
+
+
+```{r}
+summary(model_maternalGE_noCov)
+```
+
+
+This model estimates the maternal genetic variance (which is close to zero) but does not contain a covariance between `id` and `damG`. **To include the covariance we use the function `str()`**, which combines two univariate random effects into one multivariate (here bivariate) random effect.
+
+The prior needs to be adjusted accordingly, with only 2 G elements (instead of 3) of which one has dimension 2:
+
+```{r}
+prior_3RE_1str_ParamExp <- list(
+  G = list(G1 = list(V = diag(2), nu = 2, alpha.mu=rep(0,2), alpha.V=diag(rep(1000,2))),
+           G2 = list(V = 1, nu = 1, alpha.mu=0, alpha.V=1000)),
+  R = list(V = 1, nu = 1)
+)
+```
+
+The model can the be run with:
+
+```{r, cache=TRUE, message=FALSE, results='hide'}
+model_maternalGE_Cov <- MCMCglmm(birth_weight ~ 1,
+                   random = ~ str(id + damG) + damE, 
+          ginverse = list(id = inverseAmatrix, damG = inverseAmatrix), 
+          prior = prior_3RE_1str_ParamExp,
+          data = phenotypicdata,
+          nitt = 130000, burnin = 30000, thin = 100)
+```
+
+
+```{r}
+summary(model_maternalGE_Cov)
+```
+
+Here the covariance between direct and maternal genetic effects is close to zero with a broad credible interval.
+
+```{r}
+median(model_maternalGE_Cov$VCV[,"damG.id"])
+HPDinterval(model_maternalGE_Cov$VCV[,"damG.id"])
+```
+
+We can obtain the correlation as:
+
+```{r}
+cor_id_damG <- model_maternalGE_Cov$VCV[,"damG.id"] / sqrt(model_maternalGE_Cov$VCV[,"id.id"]*model_maternalGE_Cov$VCV[,"damG.damG"])
+```
+
+```{r}
+median(cor_id_damG)
+HPDinterval(cor_id_damG)
+```
+
+
+
+## Reading to go further
+
+Thomson et al. 2017. Selection on parental performance opposes selection for larger body size in a wild population of blue tits. https://doi.org/10.1038/NGEO1057
