@@ -39,6 +39,15 @@ latexDashes = true
 
 # Image processing configuration.
 [imaging]
+[imaging.jpeg]
+resampleFilter = "CatmullRom"
+quality = 75
+anchor = "smart"
+[imaging.webp]
+resampleFilter = "CatmullRom"
+quality = 75
+anchor = "smart"
+[imaging.avif]
 resampleFilter = "CatmullRom"
 quality = 75
 anchor = "smart"
@@ -107,7 +116,7 @@ version = "0.0"
 
 # A link to latest version of the docs. Used in the "version-banner" partial to
 # point people to the main doc site.
-url_latest_version = "https://example.com"
+url_latest_version = "https://wamwiki.github.io/docs/"
 
 # Repository configuration (URLs for in-page links to opening issues and suggesting changes)
 github_repo = "https://github.com/wamwiki/wamwiki.github.io"
