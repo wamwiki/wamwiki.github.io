@@ -19,16 +19,28 @@ Tutorials, code and resources about quantitative genetics, especially the “ani
 
 {{< blocks/section color="clear" type="row" >}}
 
-{{% blocks/feature icon="fab fa-stack-overflow" title="Join the forum!" url="https://forum.wildanimalmodels.org/" %}}
-For questions on animal models, announcements...
+{{% blocks/feature icon="fa fa-users" title="Who are we?" %}}
+[Community page]({{< ref "/community" >}})
 {{% /blocks/feature %}}
 
-{{% blocks/feature icon="fab fa-stack-overflow" title="Get started!" %}}
+
+{{% blocks/feature icon="fab fa-stack-overflow" title="Learn how to fit animal models!" %}}
 [Have a look at the tutorials]({{< ref "/docs" >}})
 {{% /blocks/feature %}}
 
+
+{{% blocks/feature  title="WAMBAM meetings" %}}
+[Past and future WAMBAM events]({{< ref "/wambam" >}}) 
+{{% /blocks/feature %}}
+
+
+
 {{% blocks/feature icon="fab fa-github" title="Contributions welcome!" url="https://github.com/wamwiki/wamwiki.github.io" %}}
-We do a [Pull Request](https://github.com/wamwiki/wamwiki.github.io/pulls) contributions workflow on **GitHub**. New users are always welcome!
+We do a [Pull Request](https://github.com/wamwiki/wamwiki.github.io/pulls) contributions workflow on **GitHub**. New contributors welcome!
+{{% /blocks/feature %}}
+
+{{% blocks/feature icon="fa fa-envelope" title="Join the mailing list!" %}}
+For questions on animal models, job announcements, events...    ask for instructions on how to join to [timothee.bonnet@cnrs.fr](mailto:timothee.bonnet@cnrs.fr)
 {{% /blocks/feature %}}
 
 <!--
